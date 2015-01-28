@@ -59,6 +59,20 @@ grails {
     }
 }
 
+// for gmail setting
+grails {
+	mail {
+		host = "smtp.gmail.com"
+		port = 465
+		username = "noreply2soco@gmail.com"
+		password = "soco@gmail.com"
+		props = ["mail.smtp.auth":"true",
+				 "mail.smtp.socketFactory.port":"465",
+				 "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+				 "mail.smtp.socketFactory.fallback":"false"]
+	  }
+}
+
 
 grails.converters.encoding = "UTF-8"
 // scaffolding templates configuration
@@ -88,6 +102,7 @@ grails.hibernate.osiv.readonly = false
 environments {
     development {
         grails.logging.jul.usebridge = true
+		//grails.plugin.springsecurity.active = false
     }
     production {
         grails.logging.jul.usebridge = false
@@ -115,3 +130,26 @@ log4j.main = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+
+
+// Added by the Spring Security Core plugin:
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.soco.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.soco.UserRole'
+grails.plugin.springsecurity.authority.className = 'com.soco.Role'
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+	'/':                              ['permitAll'],
+	'/index':                         ['permitAll'],
+	'/register/**':                   ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/user/**':                       ['ROLE_USER'],
+	'/role/**':                       ['ROLE_USER'],
+	'/index.gsp':                     ['permitAll'],
+	'/logout/**':                     ['permitAll'],
+	'/securityInfo/**':               ['ROLE_USER'],
+	'/registrationCode/**':           ['permitAll'],
+	'/assets/**':                     ['permitAll'],
+	'/**/js/**':                      ['permitAll'],
+	'/**/css/**':                     ['permitAll'],
+	'/**/images/**':                  ['permitAll'],
+	'/**/favicon.ico':                ['permitAll']
+]
+
