@@ -44,6 +44,7 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
+		mavenRepo 'http://repo.spring.io/milestone'
     }
 
     dependencies {
@@ -67,6 +68,9 @@ grails.project.dependency.resolution = {
 		compile ":jquery-ui:1.10.4"
 		compile ":famfamfam:1.0.1"
 		compile ":spring-security-ui:1.0-RC2"
+		compile ":spring-security-rest:1.4.1", {
+			excludes: 'spring-security-core'
+		}
 
         // plugins needed at runtime but not for compilation
         runtime ":hibernate4:4.3.6.1" // or ":hibernate:3.6.10.18"

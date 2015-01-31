@@ -1,9 +1,6 @@
-/asset/
 /com/
 /grails/
-/hibernate/
 /org/
-/spring/
 /AssetPipelineBootStrap$_closure1.class
 /AssetPipelineBootStrap.class
 /AssetUrlMappings$__clinit__closure1.class
@@ -16,6 +13,7 @@
 /BuildConfig$_run_closure1_closure3.class
 /BuildConfig$_run_closure1_closure4.class
 /BuildConfig$_run_closure1_closure5.class
+/BuildConfig$_run_closure1_closure5_closure6.class
 /BuildConfig.class
 /Config$_run_closure1.class
 /Config$_run_closure1_closure5.class
@@ -45,6 +43,18 @@
 /DefaultCacheConfig$_run_closure1_closure2.class
 /DefaultCacheConfig$_run_closure1_closure3.class
 /DefaultCacheConfig.class
+/DefaultRestSecurityConfig$_run_closure1.class
+/DefaultRestSecurityConfig$_run_closure1_closure2.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure3.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure4.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure5.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure5_closure6.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure5_closure7.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure5_closure7_closure10.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure5_closure7_closure11.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure5_closure8.class
+/DefaultRestSecurityConfig$_run_closure1_closure2_closure5_closure9.class
+/DefaultRestSecurityConfig.class
 /DefaultSecurityConfig$_run_closure1.class
 /DefaultSecurityConfig$_run_closure1_closure10.class
 /DefaultSecurityConfig$_run_closure1_closure11.class
@@ -118,6 +128,8 @@
 /JqueryUiPluginResources$_run_closure1_closure3.class
 /JqueryUiPluginResources$_run_closure1_closure4.class
 /JqueryUiPluginResources.class
+/RestOauthUrlMappings$__clinit__closure1.class
+/RestOauthUrlMappings.class
 /SpringSecurityUIPluginResources$_run_closure1.class
 /SpringSecurityUIPluginResources$_run_closure1_closure2.class
 /SpringSecurityUIPluginResources$_run_closure1_closure3.class
@@ -127,5 +139,6 @@
 /UrlMappings$__clinit__closure1_closure2.class
 /UrlMappings$__clinit__closure1_closure2_closure3.class
 /UrlMappings.class
+/asset/
 /resources$_run_closure1.class
 /resources.class

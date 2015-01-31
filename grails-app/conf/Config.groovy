@@ -86,6 +86,8 @@ grails.enable.native2ascii = true
 grails.spring.bean.packages = []
 // whether to disable processing of multi part requests
 grails.web.disable.multipart=false
+//
+grails.plugin.springsecurity.logout.postOnly = false
 
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
@@ -143,7 +145,6 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/user/**':                       ['ROLE_USER'],
 	'/role/**':                       ['ROLE_USER'],
 	'/index.gsp':                     ['permitAll'],
-	'/logout/**':                     ['permitAll'],
 	'/securityInfo/**':               ['ROLE_USER'],
 	'/registrationCode/**':           ['permitAll'],
 	'/assets/**':                     ['permitAll'],
@@ -152,4 +153,31 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/images/**':                  ['permitAll'],
 	'/**/favicon.ico':                ['permitAll']
 ]
-
+// spring security rest config
+grails.plugin.springsecurity.rest.login.useJsonCredentials = true
+grails.plugin.springsecurity.rest.token.storage.useGorm = true
+grails.plugin.springsecurity.rest.token.storage.gorm.tokenDomainClassName = 'com.soco.AuthenticationToken'
+//grails.plugin.springsecurity.filterChain.chainMap = [
+//	'/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',  // Stateless chain
+//	'/**': 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'                                                                          // Traditional chain
+//]
+/*
+grails.plugin.springsecurity.rest.login.active = true
+grails.plugin.springsecurity.rest.login.endpointUrl = '/api/login'
+grails.plugin.springsecurity.rest.login.failureStatusCode = 401
+grails.plugin.springsecurity.rest.login.useRequestParamsCredentials = true
+grails.plugin.springsecurity.rest.login.usernamePropertyName = 'username'
+grails.plugin.springsecurity.rest.login.passwordPropertyName = 'password'
+grails.plugin.springsecurity.rest.logout.endpointUrl = '/api/logout'
+grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'
+grails.plugin.springsecurity.rest.token.generation.useSecureRandom = true
+grails.plugin.springsecurity.rest.token.generation.useUUID = false
+grails.plugin.springsecurity.rest.token.storage.gorm.tokenValuePropertyName = 'tokenValue'
+grails.plugin.springsecurity.rest.token.storage.gorm.usernamePropertyName = 'username'
+grails.plugin.springsecurity.rest.token.rendering.usernamePropertyName = 'username'
+grails.plugin.springsecurity.rest.token.rendering.authoritiesPropertyName = 'role'
+grails.plugin.springsecurity.rest.token.rendering.tokenPropertyName = 'access_token'
+grails.plugin.springsecurity.rest.token.validation.active = true
+grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'
+grails.plugin.springsecurity.rest.token.validation.endpointUrl = '/api/validate'
+*/
