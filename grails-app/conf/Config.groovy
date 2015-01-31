@@ -156,11 +156,20 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 // spring security rest config
 grails.plugin.springsecurity.rest.login.useJsonCredentials = true
 grails.plugin.springsecurity.rest.token.storage.useGorm = true
+grails.plugin.springsecurity.rest.login.failureStatusCode = 401
 grails.plugin.springsecurity.rest.token.storage.gorm.tokenDomainClassName = 'com.soco.AuthenticationToken'
-//grails.plugin.springsecurity.filterChain.chainMap = [
-//	'/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',  // Stateless chain
-//	'/**': 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'                                                                          // Traditional chain
-//]
+grails.plugin.springsecurity.rest.token.storage.gorm.tokenValuePropertyName = 'token'
+// making the application more secured by intercepting all URLs 
+/*
+grails.plugins.springsecurity.useBasicAuth = true
+grails.plugins.springsecurity.basic.realmName = "REST API realm"
+grails.plugins.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+//Exclude normal controllers from basic auth filter. Just the JSON API is included
+grails.plugins.springsecurity.filterChain.chainMap = [
+'/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
+'/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
+]
+*/
 /*
 grails.plugin.springsecurity.rest.login.active = true
 grails.plugin.springsecurity.rest.login.endpointUrl = '/api/login'
