@@ -7,6 +7,10 @@ class User {
 	String username
 	String password
 	String email
+	String mobilePhone
+	Date   createDate
+	Date   lastLoginTime
+	
 	boolean enabled = true
 	boolean accountExpired
 	boolean accountLocked
