@@ -10,7 +10,23 @@ class RegisterController extends grails.plugin.springsecurity.ui.RegisterControl
 
 	def mobileRegister(RegisterCommand command) {
 		if (command.hasErrors()) {
-			render view: 'index', model: [command: command]
+			//render view: 'index', model: [command: command]
+			def jsonStr = '"username":"'+command.username+'","status":"failure"'
+			if (command.errors.hasFieldErrors('username')) {
+				jsonStr = jsonStr + ',"username":"error"' 
+			}
+			if (command.errors.hasFieldErrors('email')) {
+				jsonStr = jsonStr + ',"email":"error"'
+			}
+			if (command.errors.hasFieldErrors('password')) {
+				jsonStr = jsonStr + ',"password":"error"'
+			}
+			if (command.errors.hasFieldErrors('password2')) {
+				jsonStr = jsonStr + ',"password2":"error"'
+			}
+			response.setContentType("application/json")
+			//render '[{"username":"'+command.username+'","status":"failure"}]'
+			render '[{'+jsonStr+'}]'
 			return
 		}
 
@@ -21,9 +37,12 @@ class RegisterController extends grails.plugin.springsecurity.ui.RegisterControl
 		RegistrationCode registrationCode = springSecurityUiService.register(user, command.password, salt)
 		if (registrationCode == null || registrationCode.hasErrors()) {
 			// null means problem creating the user
-			flash.error = message(code: 'spring.security.ui.register.miscError')
-			flash.chainedParams = params
-			redirect action: 'index'
+			//flash.error = message(code: 'spring.security.ui.register.miscError')
+			//flash.chainedParams = params
+			//redirect action: 'index'
+			def err = message(code: 'spring.security.ui.register.miscError')
+			response.setContentType("application/json")
+			render '[{"username":"'+command.username+'","status":"failure","error":"'+err+'"}]'
 			return
 		}
 
@@ -43,6 +62,6 @@ class RegisterController extends grails.plugin.springsecurity.ui.RegisterControl
 
 		//render view: 'index', model: [emailSent: true]
 		response.setContentType("application/json")
-		render '[{"username":"'+command.username+'","status":"ok"}]'
+		render '[{"username":"'+command.username+'","status":"success"}]'
 	}
 }
