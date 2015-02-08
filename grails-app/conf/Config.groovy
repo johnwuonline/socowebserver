@@ -138,6 +138,7 @@ log4j.main = {
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.soco.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.soco.UserRole'
 grails.plugin.springsecurity.authority.className = 'com.soco.Role'
+//grails.plugin.springsecurity.ui.register.postRegisterUrl = '/welcome'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                              ['permitAll'],
 	'/index':                         ['permitAll'],
