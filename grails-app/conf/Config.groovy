@@ -138,13 +138,13 @@ log4j.main = {
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.soco.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.soco.UserRole'
 grails.plugin.springsecurity.authority.className = 'com.soco.Role'
-//grails.plugin.springsecurity.ui.register.postRegisterUrl = '/welcome'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                              ['permitAll'],
 	'/index':                         ['permitAll'],
 	'/register/**':                   ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/user/**':                       ['ROLE_USER'],
 	'/role/**':                       ['ROLE_USER'],
+	'/mobile/**':                     ['ROLE_USER'],
 	'/index.gsp':                     ['permitAll'],
 	'/securityInfo/**':               ['ROLE_USER'],
 	'/registrationCode/**':           ['permitAll'],
@@ -154,24 +154,39 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/images/**':                  ['permitAll'],
 	'/**/favicon.ico':                ['permitAll']
 ]
+
+//cors config.
+cors.enabled=true
+cors.url.pattern = '/api/*'
+cors.headers=[
+	'Access-Control-Allow-Origin': '*',
+	'Access-Control-Allow-Credentials': true,
+	'Access-Control-Allow-Headers': 'origin, authorization, accept, content-type, x-requested-with',
+	'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS',
+	'Access-Control-Max-Age': 3600
+	]
 // spring security rest config
+grails.plugin.springsecurity.rest.token.storage.useJwt = false
 grails.plugin.springsecurity.rest.login.useJsonCredentials = true
 grails.plugin.springsecurity.rest.token.storage.useGorm = true
 grails.plugin.springsecurity.rest.login.failureStatusCode = 401
 grails.plugin.springsecurity.rest.token.storage.gorm.tokenDomainClassName = 'com.soco.AuthenticationToken'
-grails.plugin.springsecurity.rest.token.storage.gorm.tokenValuePropertyName = 'token'
+grails.plugin.springsecurity.rest.token.storage.gorm.tokenValuePropertyName = 'tokenValue'
 // making the application more secured by intercepting all URLs 
 /*
 grails.plugins.springsecurity.useBasicAuth = true
 grails.plugins.springsecurity.basic.realmName = "REST API realm"
 grails.plugins.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+grails.plugin.springsecurity.rest.token.validation.active = true
+grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'
+grails.plugin.springsecurity.rest.token.validation.endpointUrl = '/api/validate'
 //Exclude normal controllers from basic auth filter. Just the JSON API is included
-grails.plugins.springsecurity.filterChain.chainMap = [
-'/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
-'/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
+grails.plugin.springsecurity.filterChain.chainMap = [
+	'/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',  // Stateless chain
+	'/**': 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'                                                                          // Traditional chain
 ]
-*/
-/*
+
+
 grails.plugin.springsecurity.rest.login.active = true
 grails.plugin.springsecurity.rest.login.endpointUrl = '/api/login'
 grails.plugin.springsecurity.rest.login.failureStatusCode = 401

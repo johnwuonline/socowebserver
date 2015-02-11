@@ -19,6 +19,26 @@
     <filter-name>cors-headers</filter-name>
     <filter-class>com.brandseye.cors.CorsFilter</filter-class>
     <async-supported>true</async-supported>
+    <init-param>
+      <param-name>header:Access-Control-Allow-Origin</param-name>
+      <param-value>*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>header:Access-Control-Allow-Credentials</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>header:Access-Control-Allow-Headers</param-name>
+      <param-value>origin, authorization, accept, content-type, x-requested-with</param-value>
+    </init-param>
+    <init-param>
+      <param-name>header:Access-Control-Allow-Methods</param-name>
+      <param-value>GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS</param-value>
+    </init-param>
+    <init-param>
+      <param-name>header:Access-Control-Max-Age</param-name>
+      <param-value>3600</param-value>
+    </init-param>
   </filter>
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>
@@ -75,7 +95,7 @@
     </filter-mapping>
   <filter-mapping>
     <filter-name>cors-headers</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/api/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>hiddenHttpMethod</filter-name>

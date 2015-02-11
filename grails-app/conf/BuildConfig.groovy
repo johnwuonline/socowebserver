@@ -68,7 +68,8 @@ grails.project.dependency.resolution = {
 		compile ":jquery-ui:1.10.4"
 		compile ":famfamfam:1.0.1"
 		compile ":spring-security-ui:1.0-RC2"
-		compile ":spring-security-rest:1.4.1", {
+
+		compile ":spring-security-rest:1.5.0.M1", {
 			excludes: 'spring-security-core'
 		}
 
