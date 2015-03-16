@@ -10,4 +10,8 @@ class Activity {
 
     static constraints = {
     }
+	
+	def getJsonStr(){
+		return "{'id':"+this.getId()+",'project':"+this.project_id+",'name':"+this.loc_name+",'longitude':"+this.loc_longitude+",'latitude':"+this.loc_latitude+"}"
+	}
 }

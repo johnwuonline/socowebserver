@@ -114,6 +114,13 @@ class MobileController {
 				prj_ite.eachWithIndex { prj, i ->
 					json.put("project"+pid, prj.getJsonStr())
 				}
+				//
+				sql = "from Activity where project_id="+pid
+				def activities = Activity.executeQuery(sql)
+				def act_ite = activities.iterator()
+				act_ite.eachWithIndex { act, i ->
+					json.put("activity"+i, act.getJsonStr())
+				}
 			}
 		}catch(Exception e){
 			log.error(e.message)
