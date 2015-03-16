@@ -24,8 +24,8 @@ class RegisterController extends grails.plugin.springsecurity.ui.RegisterControl
 			if (command.errors.hasFieldErrors('password2')) {
 				jsonStr = jsonStr + ',"password2":"error"'
 			}
+			log.warn(jsonStr)
 			response.setContentType("application/json")
-			//render '[{"username":"'+command.username+'","status":"failure"}]'
 			render '[{'+jsonStr+'}]'
 			return
 		}
@@ -34,6 +34,13 @@ class RegisterController extends grails.plugin.springsecurity.ui.RegisterControl
 		def user = lookupUserClass().newInstance(email: command.email, username: command.username,
 				accountLocked: true, enabled: true)
 
+		if (user != null){
+			user.setCreateDate(new Date())
+			user.setPlainPassword(command.password)
+			user.setMobilePhone("12314143")
+			user.setLastLoginTime(new Date())
+		}
+		
 		RegistrationCode registrationCode = springSecurityUiService.register(user, command.password, salt)
 		if (registrationCode == null || registrationCode.hasErrors()) {
 			// null means problem creating the user
@@ -41,6 +48,7 @@ class RegisterController extends grails.plugin.springsecurity.ui.RegisterControl
 			//flash.chainedParams = params
 			//redirect action: 'index'
 			def err = message(code: 'spring.security.ui.register.miscError')
+			log.warn(err)
 			response.setContentType("application/json")
 			render '[{"username":"'+command.username+'","status":"failure","error":"'+err+'"}]'
 			return

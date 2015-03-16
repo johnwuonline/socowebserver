@@ -119,6 +119,9 @@ log4j.main = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
+	root {
+		debug()
+	}
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP
@@ -141,7 +144,7 @@ grails.plugin.springsecurity.authority.className = 'com.soco.Role'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                              ['permitAll'],
 	'/index':                         ['permitAll'],
-	'/register/**':                   ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/register/**':                   ['permitAll'],
 	'/user/**':                       ['ROLE_USER'],
 	'/role/**':                       ['ROLE_USER'],
 	'/mobile/**':                     ['ROLE_USER'],
@@ -156,6 +159,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 ]
 
 //cors config.
+/*
 cors.enabled=true
 cors.url.pattern = '/api/*'
 cors.headers=[
@@ -165,6 +169,7 @@ cors.headers=[
 	'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS',
 	'Access-Control-Max-Age': 3600
 	]
+*/
 // spring security rest config
 grails.plugin.springsecurity.rest.token.storage.useJwt = false
 grails.plugin.springsecurity.rest.login.useJsonCredentials = true
@@ -172,6 +177,8 @@ grails.plugin.springsecurity.rest.token.storage.useGorm = true
 grails.plugin.springsecurity.rest.login.failureStatusCode = 401
 grails.plugin.springsecurity.rest.token.storage.gorm.tokenDomainClassName = 'com.soco.AuthenticationToken'
 grails.plugin.springsecurity.rest.token.storage.gorm.tokenValuePropertyName = 'tokenValue'
+grails.plugin.springsecurity.rest.logout.endpointUrl = '/api/logout'
+grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'
 // making the application more secured by intercepting all URLs 
 /*
 grails.plugins.springsecurity.useBasicAuth = true
