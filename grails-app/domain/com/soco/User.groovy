@@ -67,4 +67,9 @@ class User {
 		lastLoginTime = lltime
 	}
 	
+	def getUserJson(){
+		return "{'id':"+this.getId()+",'name':"+this.username+",'email':"+this.email+"}"
+	}
+	
+	
 }
