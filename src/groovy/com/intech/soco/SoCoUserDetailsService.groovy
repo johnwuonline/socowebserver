@@ -19,7 +19,8 @@ class SoCoUserDetailsService implements GrailsUserDetailsService {
 		// TODO Auto-generated method stub
 		User.withTransaction { status ->
 
-         User user = User.findByUsername(username)
+        // User user = User.findByUsername(username)
+		 User user = User.findByUsernameOrEmail(username,username)
          if (!user) throw new UsernameNotFoundException(
                       'User not found', username)
 
