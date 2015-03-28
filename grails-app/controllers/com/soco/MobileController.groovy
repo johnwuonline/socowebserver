@@ -246,7 +246,7 @@ class MobileController {
 					actAttrIte.eachWithIndex { item, index ->
 						attrList.add(item.toJsonString());
 					}
-					json.put("attribute", attrList.toString())
+					json.put("attributes", attrList.toString())
 					json.put("status", MobileController.SUCCESS);
 				} else {
 					log.error("The activity number is not 1. It is " + activityList.size())
@@ -269,8 +269,8 @@ class MobileController {
 	def getAllActivityByCurrentUser(){
 		JSONObject json = new JSONObject()
 		try{
-			def user_id = springSecurityService.currentUser.id;
-			def sql = "select activity_id from UserActivity where user_id="+user_id
+			def uid = springSecurityService.currentUser.id;
+			def sql = "select activity_id from UserActivity where user_id="+uid
 			def activity_list = UserActivity.executeQuery(sql);
 			def str = activity_list.join(",");
 			json.put("status", MobileController.SUCCESS);
@@ -287,6 +287,29 @@ class MobileController {
 	 * get contacts of current user
 	 * @return a json format response includes all users profile 
 	 * */
+	def getAllFriendsForCurrentUser(){
+		JSONObject json = new JSONObject()
+		try{
+			long uid = springSecurityService.currentUser.id;
+			def sql = "select friend_id from Friends where user_id=" + uid
+			def friends = Friends.executeQuery(sql)
+			def f_ite = friends.iterator()
+			def attrList = new ArrayList();
+			f_ite.eachWithIndex { fid, i ->
+				def user = User.get(fid)
+				attrList.add(user.getUserJson());
+			}
+			json.put("friends", attrList.toString())
+			json.put("status", MobileController.SUCCESS);
+			
+		}catch(Exception e){
+			log.error(e.message)
+			json.put("status", MobileController.FAIL);
+		}
+		render json
+	}
+	
+	
 	def getContactByUserID(){
 		JSONObject json = new JSONObject()
 		try{
@@ -315,9 +338,44 @@ class MobileController {
 	
 	/*
 	 * add friends
+	 * @param in {email:"test@test.com"}
 	 * */
 	def addFriend(){
-		
+		JSONObject json = new JSONObject()
+		try{
+			def email;
+			boolean ret;
+			(ret, email) = getRequestValueByNameFromJSON(request.JSON, "email");
+			if(ret){
+				def user_id = springSecurityService.currentUser.id;
+				def sql = "from User where email='"+email+"'"
+				def userList = User.executeQuery(sql)
+				if(userList.size() > 0){
+					def user = userList.get(0);
+					def fid = user.getId()
+					log.debug("friend id:" + fid)
+					Friends f = new Friends()
+					f.user_id = user_id
+					f.friend_id = fid
+					if(f.save()){
+						json.put("status", MobileController.SUCCESS);
+					} else {
+						json.put("status", MobileController.FAIL);
+						log.error("friend save failed for friend id:" + fid)
+					}
+				} else {
+					json.put("status", MobileController.FAIL);
+					log.error("there is no user for email:"+email)
+				}
+			}else{
+				json.put("status", MobileController.FAIL);
+				log.error("there is error in request json message.")
+			}
+		}catch(Exception e){
+			log.error(e.message)
+			json.put("status", MobileController.FAIL);
+		}
+		render json
 	}
 	
 	/*
@@ -328,5 +386,46 @@ class MobileController {
 		
 	}
 	
-	/**/
+	/*
+	 * search user when add a friend
+	 * @param in { email:"test@test.com" } or { name: "john" }
+	 * @return a user json format
+	 * */
+	def queryUserByEmailOrUsername()
+	{
+		JSONObject json = new JSONObject()
+		try{
+			def email;
+			def sql = "";
+			boolean ret;
+			(ret, email) = getRequestValueByNameFromJSON(request.JSON, "email");
+			if(ret){
+				sql = "from User where email='"+email+"'"
+			}else{
+				def username
+				(ret, username) = getRequestValueByNameFromJSON(request.JSON, "name");
+				if(ret){
+					sql = "from User where username='"+username+"'"
+				}
+			}
+			if(sql != ""){
+				def userList = User.executeQuery(sql)
+				if(userList.size() > 0){
+					def user = userList.get(0);
+					json.put("user", user.getUserJson());
+					json.put("status", MobileController.SUCCESS);
+				} else {
+					json.put("status", MobileController.FAIL);
+					log.error("not find the user")
+				}
+			} else {
+				json.put("status", MobileController.FAIL);
+				log.error("there is no email or name in request json message.")
+			}
+		}catch(Exception e){
+			log.error(e.message)
+			json.put("status", MobileController.FAIL);
+		}
+		render json
+	}
 }
