@@ -35,13 +35,13 @@
 		clear: left;
 		margin: 0;
 		padding: 4px 0 3px 0;
-		padding-left: 105px;
+		padding-left: 60px;
 		margin-bottom: 20px;
 		height: 1%;
 	}
 
 	#login .inner .cssform input[type='text'] {
-		width: 120px;
+		width: 200px;
 	}
 
 	#login .inner .cssform label {
@@ -55,7 +55,7 @@
 	}
 
 	#login #remember_me_holder {
-		padding-left: 120px;
+		padding-left: 80px;
 	}
 
 	#login #submit {
@@ -75,7 +75,7 @@
 	}
 
 	#login .inner .text_ {
-		width: 120px;
+		width: 200px;
 	}
 
 	#login .inner .chk {
@@ -85,7 +85,6 @@
 </head>
 
 <body>
-This own page.<br>
 <div id='login'>
 	<div class='inner'>
 		<div class='fheader'><g:message code="springSecurity.login.header"/></div>
@@ -96,13 +95,13 @@ This own page.<br>
 
 		<form action='${postUrl}' method='POST' id='loginForm' class='cssform' autocomplete='off'>
 			<p>
-				<label for='username'><g:message code="springSecurity.login.username.label"/>:</label>
-				<input type='text' class='text_' name='j_username' id='username'/>
+				<!--  <label for='username'><g:message code="springSecurity.login.username.label"/>:</label>  -->
+				<input type='text' class='text_' name='j_username' id='username' placeholder="Username/Email"/>
 			</p>
 
 			<p>
-				<label for='password'><g:message code="springSecurity.login.password.label"/>:</label>
-				<input type='password' class='text_' name='j_password' id='password'/>
+				<!--  <label for='password'><g:message code="springSecurity.login.password.label"/>:</label>  -->
+				<input type='password' class='text_' name='j_password' id='password' placeholder="Password"/>
 			</p>
 
 			<p id="remember_me_holder">
