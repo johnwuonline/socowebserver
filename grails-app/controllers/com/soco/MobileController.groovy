@@ -2,12 +2,14 @@ package com.soco
 
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class MobileController {
 	public static final String SUCCESS = "success";
 	public static final String FAIL = "failure";
 	
 	def springSecurityService
+	def mailService
 
     def index() { 
 		render "This is for mobile!"
@@ -427,5 +429,135 @@ class MobileController {
 			json.put("status", MobileController.FAIL);
 		}
 		render json
+	}
+	
+	/*
+	 * @param in { email:"test@test.com", activity: 1 } or { name: "john", activity: 1}
+	 * @return a user json format
+	 * */
+	def inviteFriendShareActivity(){
+		JSONObject json = new JSONObject()
+		try{
+			def email = "";
+			def username = ""
+			def sql = "";
+			boolean ret;
+			def user = (User)springSecurityService.currentUser
+			def user_id = user.getId();
+			
+			(ret, email) = getRequestValueByNameFromJSON(request.JSON, "email");
+			if(ret){
+				//sql = "from User where email='"+email+"'"
+				username = email
+			}else{
+				(ret, username) = getRequestValueByNameFromJSON(request.JSON, "name");
+				if(!ret){
+					//sql = "from User where username='"+username+"'"
+					username = ""
+				}
+			}
+			def aid
+			(ret, aid) = getRequestValueByNameFromJSON(request.JSON, "activity");
+			User invitee = User.findByUsernameOrEmail(username,username)
+			if(ret){
+				//def userList = User.executeQuery(sql)
+				//save
+				InviteActivity inact = new InviteActivity()
+				inact.inviter_id = user_id
+				inact.inviter_name = user.username
+				inact.activity_id = aid
+				inact.invite_time = new Date()
+				inact.status = 0;
+				if(invitee){
+					// send an invitation in heartbeat
+					inact.invitee_email = invitee.email
+					if(inact.save()){
+						json.put("status", MobileController.SUCCESS);
+					}else{
+						json.put("status", MobileController.FAIL);
+					}
+				} else {
+					// not a user, then send out an email
+					if(email != ""){
+						inact.invitee_email = email
+						if(inact.save()){
+							def conf = SpringSecurityUtils.securityConfig
+							def body = "hi, please click http://localhost:8090/socoserver/user/openSharedActivity to see the invatation."
+							def subjectStr = "An invitation from your friend"
+							mailService.sendMail {
+								to email
+								from conf.ui.register.emailFrom
+								subject subjectStr
+								html body
+							}
+							
+							json.put("status", MobileController.SUCCESS);
+						}else{
+							json.put("status", MobileController.FAIL);
+						}
+					} else {
+						ret = false
+						json.put("status", MobileController.FAIL);
+						log.error("not find the user and no email")
+					}
+				}
+				//
+			} else {
+				json.put("status", MobileController.FAIL);
+				log.error("there is no email or name in request json message.")
+			}
+		}catch(Exception e){
+			log.error(e.message)
+			json.put("status", MobileController.FAIL);
+		}
+		render json
+	}
+	
+	/*
+	 * 
+	 * */
+	def HeartBeat(){
+		JSONObject json = new JSONObject()
+		try{
+			def user = (User)springSecurityService.currentUser;
+			def user_id = user.getId()
+			/*
+			 * save heart beat information into db
+			 * */
+			HeartBeat hb = new HeartBeat()
+			hb.user_id = user_id
+			hb.user_ip = "127.0.0.1"
+			hb.user_port = 0
+			hb.datetime = new Date()
+			if(hb.save()){
+				json.put("status", MobileController.SUCCESS);
+			}else{
+				Date d = new Date()
+				log.error("["+d.toString()+"] <HeartBeat>: save error. For user id:"+user_id)
+				json.put("status", MobileController.FAIL);
+			}
+			/* check the invite activity table and infor user invitation
+			 * { invitation: [{inviter:"john", activity: 1, date:"2015-04-05 12:12:12"}, ... ]
+			 * */
+			def user_email = user.email
+			def sql = "from InviteActivity where invitee_email='"+user_email+"' and status=0"
+			def inviteList = InviteActivity.executeQuery(sql)
+			def inviteAList = new ArrayList();
+			inviteList.eachWithIndex { item, index->
+				inviteAList.add(item.toJsonString())
+			}
+			json.put("invitation", inviteAList.toString())
+		}catch(Exception e){
+			log.error(e.message)
+			json.put("status", MobileController.FAIL);
+		}
+		render json
+	}
+	
+	/*
+	 * @param in {activity:1}
+	 * */
+	def joinActivityByInvite(){
+		
 	}
 }

@@ -9,4 +9,11 @@ class UserController extends grails.plugin.springsecurity.ui.UserController {
 		render '[{"a1":"1","a2":"2"},{"b1":"11","b2":"12"}]'
 	}
 	
+	def openSharedActivity(){
+		render "Your friend send you an invitation."
+	}
+	
+	def index(){
+		
+	}
 }

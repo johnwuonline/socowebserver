@@ -68,7 +68,7 @@ class User {
 	}
 	
 	def getUserJson(){
-		return "{'id':"+this.getId()+",'name':"+this.username+",'email':"+this.email+"}"
+		return "{'id':"+this.getId()+",'name':'"+this.username+"','email':'"+this.email+"'}"
 	}
 	
 	

@@ -17,6 +17,6 @@ class ActivityAttribute {
     }
 	
 	def toJsonString(){
-		return "{name:"+name+",index:"+name_index+",type:"+type+",value:"+value+"}";
+		return "{name:'"+name+"',index:"+name_index+",type:"+type+",value:'"+value+"'}";
 	}
 }
