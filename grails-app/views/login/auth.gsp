@@ -110,6 +110,7 @@
 			</p>
 
 			<p>
+			    <s2ui:linkButton elementId='register' controller='register' messageCode='spring.security.ui.login.register'/>
 				<input type='submit' id="submit" value='${message(code: "springSecurity.login.button")}'/>
 			</p>
 		</form>
