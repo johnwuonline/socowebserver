@@ -231,37 +231,37 @@ class MobileController {
 	 * get activity details by activity id
 	 * */
 	def getActivityByID(){
-		JSONObject json = new JSONObject()
-		try{
-			long aid;
-			boolean ret;
-			(ret, aid) = getRequestValueByNameFromJSON(request.JSON, "activity");
-			if(ret){
-				def sql = "from Activity where id=" + aid
-				def activityList = Activity.executeQuery(sql)
-				if(activityList.size() == 1){
-					json.put("activity", activityList[0].getJsonStr())
-					sql = "from ActivityAttribute where activity_id=" + aid
-					def actAttrList = ActivityAttribute.executeQuery(sql);
-					def actAttrIte = actAttrList.iterator()
-					def attrList = new ArrayList();
-					actAttrIte.eachWithIndex { item, index ->
-						attrList.add(item.toJsonString());
-					}
-					json.put("attributes", attrList.toString())
-					json.put("status", MobileController.SUCCESS);
-				} else {
-					log.error("The activity number is not 1. It is " + activityList.size())
-					json.put("status", MobileController.FAIL);
+		JSONObject json = null
+		
+		long aid;
+		boolean ret;
+		(ret, aid) = getRequestValueByNameFromJSON(request.JSON, "activity");
+		if(ret){
+			ActivityController ac = new ActivityController()
+			json = ac.getActivityByID(aid)
+			/*
+			def sql = "from Activity where id=" + aid
+			def activityList = Activity.executeQuery(sql)
+			if(activityList.size() == 1){
+				json.put("activity", activityList[0].getJsonStr())
+				sql = "from ActivityAttribute where activity_id=" + aid
+				def actAttrList = ActivityAttribute.executeQuery(sql);
+				def actAttrIte = actAttrList.iterator()
+				def attrList = new ArrayList();
+				actAttrIte.eachWithIndex { item, index ->
+					attrList.add(item.toJsonString());
 				}
+				json.put("attributes", attrList.toString())
+				json.put("status", MobileController.SUCCESS);
 			} else {
+				log.error("The activity number is not 1. It is " + activityList.size())
 				json.put("status", MobileController.FAIL);
-			}
-			//
-		}catch(Exception e){
-			log.error(e.message)
+			}*/
+		} else {
+			json = new JSONObject()
 			json.put("status", MobileController.FAIL);
 		}
+			
 		render json
 	}
 	
@@ -558,6 +558,39 @@ class MobileController {
 	 * @param in {activity:1}
 	 * */
 	def joinActivityByInvite(){
-		
+		JSONObject json = null
+		try{
+			def user = (User)springSecurityService.currentUser;
+			def user_id = user.getId()
+			def email = user.email
+			/*
+			 * 
+			 * */
+			def aid
+			boolean ret
+			(ret, aid) = getRequestValueByNameFromJSON(request.JSON, "activity");
+			if(ret){
+				InviteActivityController iac = new InviteActivityController()
+				ret = iac.updateStatusByEmailActivityID(email, user_id, 1)
+				/*
+				 * add activity attribute
+				 * */
+				ActivityAttributeController aac = new ActivityAttributeController()
+				def name_index = aac.addAttribute(aid, "member", "long", user_id.toString())
+				/*
+				 * get activity
+				 * */
+				ActivityController ac = new ActivityController()
+				json = ac.getActivityByID(aid)
+			}else{
+				json = new JSONObject()
+				json.put("status", MobileController.FAIL);
+			}
+		}catch(Exception e){
+			log.error(e.message)
+			json = new JSONObject()
+			json.put("status", MobileController.FAIL);
+		}
+		render json
 	}
 }
