@@ -77,6 +77,6 @@ class Activity {
 	}
 	
 	def getJsonStr(){
-		return "{name:'"+this.name+"',tag:'"+this.tag+"',signature:"+this.signature+",type:"+this.type+",is_achieved:"+this.is_achieved+"}"
+		return "{name:'"+this.name+"',tag:'"+this.tag+"',signature:'"+this.signature+"',type:'"+this.type+"',is_achieved:"+this.is_achieved+"}"
 	}
 }

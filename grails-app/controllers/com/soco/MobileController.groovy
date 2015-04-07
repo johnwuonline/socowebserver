@@ -164,7 +164,7 @@ class MobileController {
 									log.debug("No name in requestion json.")
 								}
 								if(!error && attr.containsKey("index")){
-									aa.name_index = attr.getString("index");
+									aa.name_index = attr.getInt("index");
 								} else {
 									error = true
 									log.debug("No index in requestion json.")
@@ -239,24 +239,6 @@ class MobileController {
 		if(ret){
 			ActivityController ac = new ActivityController()
 			json = ac.getActivityByID(aid)
-			/*
-			def sql = "from Activity where id=" + aid
-			def activityList = Activity.executeQuery(sql)
-			if(activityList.size() == 1){
-				json.put("activity", activityList[0].getJsonStr())
-				sql = "from ActivityAttribute where activity_id=" + aid
-				def actAttrList = ActivityAttribute.executeQuery(sql);
-				def actAttrIte = actAttrList.iterator()
-				def attrList = new ArrayList();
-				actAttrIte.eachWithIndex { item, index ->
-					attrList.add(item.toJsonString());
-				}
-				json.put("attributes", attrList.toString())
-				json.put("status", MobileController.SUCCESS);
-			} else {
-				log.error("The activity number is not 1. It is " + activityList.size())
-				json.put("status", MobileController.FAIL);
-			}*/
 		} else {
 			json = new JSONObject()
 			json.put("status", MobileController.FAIL);
