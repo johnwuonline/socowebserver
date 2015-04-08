@@ -1,3 +1,6 @@
+import org.apache.log4j.DailyRollingFileAppender
+import org.apache.log4j.PatternLayout
+
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -119,8 +122,35 @@ log4j.main = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
+	
+	/*PatternLayout is used to print the logging messages in certain pattern. 
+	 * By default, grails assumes that we are using pattern layout.
+	 * */
+	def logLayoutPattern = new PatternLayout("%d{yyyy-MM-dd/HH:mm:ss.SSS} [%t] %x %-5p %c{2} - %m%n")
+	def simplePattern = new PatternLayout("[%p] [%c{3}] %m%n")
+	
+	appenders {
+		appender new DailyRollingFileAppender(
+						 name: "logFile",
+						 file: "logs/soco.log",
+						 datePattern: "'.'yyyy-MM-dd",   //Rollover at midnight each day.
+						 layout: logLayoutPattern
+				  )
+		
+		console name:"stdout",
+				layout: simplePattern
+	}
+	
 	root {
 		//debug()
+		environments {
+			production {
+				error "logFile"
+			}
+			development {
+				error "logFile", "stdout"
+			}
+		}
 	}
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
@@ -134,6 +164,11 @@ log4j.main = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
+
+   warn    'org.springframework',
+		   'org.hibernate',
+		   'grails.plugins.springsecurity',
+		   'groovyx.net.http'
 }
 
 
