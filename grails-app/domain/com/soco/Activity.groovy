@@ -10,7 +10,7 @@ class Activity {
 	String tag
 	String signature = ""
 	Integer active = 1
-	Boolean is_achieved = false
+	Boolean is_archived = false
 	Boolean is_deleted = false
 	String type = ""
 	
@@ -20,18 +20,13 @@ class Activity {
 		tag blank: false
 		signature blank: false
 		active blank: false
-		is_achieved blank:false
+		is_archived blank:false
 		is_deleted blank: false
 		type blank:false
     }
 	
-	def createActivity(JSONObject jsonObj) {
-		log.debug(jsonObj.toString())
-		
-		return parseJsonAndSave(jsonObj)
-	}
 	
-	def parseJsonAndSave(JSONObject jsonObj){
+	def parseJsonObject(JSONObject jsonObj){
 		def jsonStr = "{}"
 		def error = false
 		
@@ -77,6 +72,6 @@ class Activity {
 	}
 	
 	def getJsonStr(){
-		return "{name:'"+this.name+"',tag:'"+this.tag+"',signature:'"+this.signature+"',type:'"+this.type+"',is_achieved:"+this.is_achieved+"}"
+		return "{name:'"+this.name+"',tag:'"+this.tag+"',signature:'"+this.signature+"',type:'"+this.type+"',is_archived:"+this.is_archived+"}"
 	}
 }
