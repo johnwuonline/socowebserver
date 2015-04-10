@@ -32,4 +32,8 @@ class UserActivityController {
 		}
 		return ret;
 	}
+	
+	static def getUsersByActivityID(long aid){
+		
+	}
 }
