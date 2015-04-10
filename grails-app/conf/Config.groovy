@@ -183,6 +183,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/user/**':                       ['ROLE_USER'],
 	'/role/**':                       ['ROLE_USER'],
 	'/mobile/**':                     ['ROLE_USER'],
+	'/exchange/**':                   ['ROLE_USER'],
 	'/user_master/**':                ['ROLE_USER'],
 	'/index.gsp':                     ['permitAll'],
 	'/securityInfo/**':               ['ROLE_USER'],
