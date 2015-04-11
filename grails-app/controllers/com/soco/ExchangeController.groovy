@@ -139,9 +139,9 @@ class ExchangeController {
 					def signature = getRequestValueByNameFromJSON(item, "signature");
 					def sql = "delete UserMessage where signature='"+signature+"' and status="+UserMessageController.STATUS_SENT;
 					def ret = UserMessage.executeUpdate(sql);
-					json.put("status", MobileController.SUCCESS);
 				}
 			}
+			json.put("status", MobileController.SUCCESS);
 		}catch(Exception e){
 			log.error(e.getMessage());
 			json.put("status", MobileController.FAIL);
