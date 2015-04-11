@@ -27,7 +27,7 @@ class MessageController {
 					um.from_id = msg.from_id;
 					um.to_user_id = user.getId();
 					um.status = UserMessageController.STATUS_NOT_SENT;
-					def md5Str = msg.context_type.toString() + msg.context
+					def md5Str = msg.context_type.toString() + msg.context + msg.send_date_time;
 					um.signature = Utility.getMD5(md5Str);
 					msgList.add(um);
 				}
@@ -42,7 +42,7 @@ class MessageController {
 					um.from_id = msg.from_id;
 					um.to_user_id = ua.user_id;
 					um.status = UserMessageController.STATUS_NOT_SENT;
-					def md5Str = msg.context_type.toString() + msg.context
+					def md5Str = msg.context_type.toString() + msg.context + msg.send_date_time;
 					um.signature = Utility.getMD5(md5Str);
 					msgList.add(um);
 				}

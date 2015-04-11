@@ -7,7 +7,7 @@ class UserActivity {
 	String status
 
     static constraints = {
-		user_id()
+		user_id(unique: ['activity_id'])
 		activity_id()
 		relation()
 		status()
