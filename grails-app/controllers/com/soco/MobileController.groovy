@@ -187,7 +187,7 @@ class MobileController {
 		try{
 			def jsonObject = getRequestJSON();
 			long aid;
-			def user_id = springSecurityService.currentUser.id
+			def user_id = springSecurityService.currentUser.id;
 			boolean ret;
 			def attrList = new ArrayList();
 			(ret, aid) = getRequestValueByNameFromJSON(jsonObject, "activity");

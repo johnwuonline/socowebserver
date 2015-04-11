@@ -33,7 +33,14 @@ class UserActivityController {
 		return ret;
 	}
 	
-	static def getUsersByActivityID(long aid){
-		
+	def getUsersByActivityID(long aid){
+		def uaList = [];
+		try{
+			def sql = "from UserActivity where activity_id="+aid;
+			uaList = UserActivity.executeQuery(sql);
+		}catch(Exception e){
+			log.error(e.getMessage());
+		}
+		return uaList;
 	}
 }

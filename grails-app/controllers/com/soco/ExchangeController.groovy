@@ -5,6 +5,9 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject;
 
 class ExchangeController {
+	
+	def springSecurityService;
+	
 
     def index() { }
 	
@@ -61,6 +64,14 @@ class ExchangeController {
 				//convert to user message
 				MessageController mc = new MessageController();
 				def userMsgList = mc.convert2UserMsg(message);
+				userMsgList.eachWithIndex { item, index ->
+					def um = (UserMessage)item;
+					if(um.save()){
+						//
+					}else{
+						log.error("<sendOut> user message save failed for user id:"+um.to_user_id+", msg id:"+um.message_id);
+					}
+				}
 			} else {
 				def jsonStr = "{status:"+MobileController.FAIL+"}";
 				answer = JSON.parse(jsonStr);
@@ -91,11 +102,22 @@ class ExchangeController {
 		{ status:"failure"}	
 	 * */
 	def receiveMsg(){
+		JSONObject json = new JSONObject();
 		try{
-		
+			def user_id = springSecurityService.currentUser.id;
+			UserMessageController umc = new UserMessageController();
+			json.put("message", umc.getUserMsgByUserID(user_id));
+			json.put("status", MobileController.SUCCESS);
+			if(umc.getNumOfUserMsgByUserID(user_id) > 0){
+				json.put("finish", 0);
+			}else{
+				json.put("finish", 1);
+			}
 		}catch(Exception e){
 			log.error(e.getMessage());
+			json.put("status", MobileController.FAIL);
 		}
+		render json;
 	}
 	
 	/* ackReceivedMsg
@@ -109,10 +131,21 @@ class ExchangeController {
 		{ status:"failure"}
 	 * */
 	def ackReceivedMsg(){
+		JSONObject json = new JSONObject();
 		try{
-			
+			def sigList = getRequestValueByNameFromJSON(getRequestJSON(), "ack");
+			sigList.eachWithIndex { item, index ->
+				if(item instanceof JSONObject){
+					def signature = getRequestValueByNameFromJSON(item, "signature");
+					def sql = "delete UserMessage where signature='"+signature+"' and status="+UserMessageController.STATUS_SENT;
+					def ret = UserMessage.executeUpdate(sql);
+					json.put("status", MobileController.SUCCESS);
+				}
+			}
 		}catch(Exception e){
 			log.error(e.getMessage());
+			json.put("status", MobileController.FAIL);
 		}
+		render json;
 	}
 }

@@ -1,5 +1,7 @@
 package com.soco
 
+import socowebserver.Utility;
+
 class MessageController {
 	
 	public static final int TYPE_USER_NAME = 0;
@@ -13,24 +15,41 @@ class MessageController {
 	
 	
 	def convert2UserMsg(Message msg){
+		def msgList = new ArrayList();
 		
-		UserMessage um = new UserMessage();
-		um.from_type = msg.from_type;
-		um.from_id = msg.from_id;
 		switch (msg.to_type) {
 			case MessageController.TYPE_USER_NAME:
 			case MessageController.TYPE_USER_EMAIL:
 				User user = User.findByUsernameOrEmail(msg.to_id, msg.to_id);
 				if(user){
+					UserMessage um = new UserMessage();
+					um.from_type = msg.from_type;
+					um.from_id = msg.from_id;
 					um.to_user_id = user.getId();
+					um.status = UserMessageController.STATUS_NOT_SENT;
+					def md5Str = msg.context_type.toString() + msg.context
+					um.signature = Utility.getMD5(md5Str);
+					msgList.add(um);
 				}
 				break;
 			case MessageController.TYPE_ACTIVITY_ID:
-				def userList = UserActivityController.getUsersByActivityID(msg.to_id.toBigInteger());
+				UserActivityController uac = new UserActivityController();
+				def userList = uac.getUsersByActivityID(msg.to_id.toBigInteger());
+				userList.eachWithIndex { item, index ->
+					def ua = (UserActivity)item;
+					UserMessage um = new UserMessage();
+					um.from_type = msg.from_type;
+					um.from_id = msg.from_id;
+					um.to_user_id = ua.user_id;
+					um.status = UserMessageController.STATUS_NOT_SENT;
+					def md5Str = msg.context_type.toString() + msg.context
+					um.signature = Utility.getMD5(md5Str);
+					msgList.add(um);
+				}
 				break;
 			default:
 				break;
 		}
-		
+		return msgList;
 	}
 }

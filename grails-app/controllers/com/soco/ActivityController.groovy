@@ -6,6 +6,10 @@ class ActivityController {
 
     def index() { }
 	
+	def showAllActivityAsGSP(){
+		render "hello"
+	}
+	
 	
 	/*
 	 * get activity details by activity id

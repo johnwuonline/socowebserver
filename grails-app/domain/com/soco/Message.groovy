@@ -89,4 +89,26 @@ class Message {
 		}
 		return JSON.parse(jsonStr)
 	}
+	
+	def toJsonString(){
+		return "{from_type:"+this.from_type
+			 + ",from_id:'" + this.from_id
+			 + "',to_type:" + this.to_type 
+			 + ",to_id:'" + this.to_id 
+			 + "',send_date_time:'" + this.send_date_time
+			 + "',context_type:" + this.context_type
+			 + ",context:'" + this.context
+			 + "'}";
+	}
+	
+	def toJsonString(key, value){
+		return "{from_type:"+this.from_type
+			 + ",from_id:'" + this.from_id
+			 + "',to_type:" + this.to_type
+			 + ",to_id:'" + this.to_id
+			 + "',send_date_time:'" + this.send_date_time
+			 + "',context_type:" + this.context_type
+			 + ",context:'" + this.context
+			 + "'," + key + ":'" + vavlue + "'}";
+	}
 }
