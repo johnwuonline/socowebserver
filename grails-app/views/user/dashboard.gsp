@@ -120,5 +120,30 @@
 	    </table>
     </div>
     
+    <div style="background:#eeeeee">
+    Invite Activity information:<br>
+	    <table>
+	        <tr>
+	            <td>ID</td>
+	            <td>InviterID</td>
+	            <td>InviterName</td>
+	            <td>InviteeEmail</td>
+	            <td>ActivityID</td>
+	            <td>InviteTime</td>
+	            <td>Status</td>
+	        </tr>
+	        <g:each in="${iaList}" var="ia">
+	        <tr>
+	            <td>${ia.id}</td>
+	            <td>${ia.inviter_id}</td>
+	            <td>${ia.inviter_name}</td>
+	            <td>${ia.invitee_email}</td>
+	            <td>${ia.activity_id}</td>
+	            <td>${ia.invite_time}</td>
+	            <td>${ia.status}</td>
+	        </tr>
+	        </g:each>        
+	    </table>
+    </div>
 </body>
 </html>

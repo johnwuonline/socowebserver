@@ -17,7 +17,7 @@
 		<g:layoutHead/>
 	</head>
 	<body>
-		<div id="grailsLogo" role="banner"><a href="http://localhost:8080/socoserver"><asset:image src="logo_soco.png" alt="Grails"/></a></div>
+		<div id="grailsLogo" role="banner"><a href="/socoserver"><asset:image src="logo_soco.png" alt="Grails"/></a></div>
 		<g:layoutBody/>
 		<div class="footer" role="contentinfo">@copyright SOCO</div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>

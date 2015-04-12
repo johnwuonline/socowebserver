@@ -82,22 +82,32 @@
 	</head>
 	<body>
 		<a href="#page-body" class="skip"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-		
-		<div id="page-body" role="main">
-			<h1>Welcome to Grails</h1>
-			<p>Congratulations, you have successfully started your first Grails application! At the moment
-			   this is the default page, feel free to modify it to either redirect to a controller or display whatever
-			   content you may choose. Below is a list of controllers that are currently deployed in this application,
-			   click on each to execute its default action:</p>
-
-			<div id="controller-list" role="navigation">
-				<h2>Available Controllers:</h2>
-				<ul>
-					<g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-						<li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
-					</g:each>
-				</ul>
+		<div align="right">
+			<div>
+				<g:if test="${sec.username()==''}">
+					<form action='${resource('file': 'j_spring_security_check')}' method='POST' id='loginForm' class='cssform' autocomplete='off'>
+							<input type='text' class='text_' name='j_username' id='username' placeholder="Username/Email"/>
+							<input type='password' class='text_' name='j_password' id='password' placeholder="Password"/>
+						    <input type='submit' id="submit" value='sign in'/>
+					</form>
+					<a href="/socoserver/register/">sign up</a>
+				</g:if>
+				<g:if test="${sec.username()!=''}">
+				     Hello, ${sec.username()} (<a href="/socoserver/logout/index">Logout</a>)
+				</g:if>
 			</div>
+		</div>
+		<div id="page-body" role="main">
+			<h1>Welcome to SoCo</h1>
+			<g:if test="${sec.username()!=''}">
+				<a href="/socoserver/user/dashboard">DashBoard</a>
+			</g:if>
+			<g:else>
+				<p>
+				Building ...
+				</p>
+			</g:else>
+			
 		</div>
 	</body>
 </html>

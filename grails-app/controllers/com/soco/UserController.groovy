@@ -37,8 +37,11 @@ class UserController extends grails.plugin.springsecurity.ui.UserController {
 			sql = "from UserMessage";
 			def umList = UserMessage.executeQuery(sql);
 			
+			sql = "from InviteActivity";
+			def iaList = UserMessage.executeQuery(sql);
+			
 			//
-			[actList:actList, aaList:aaList, userList:userList, uaList:uaList, msgList:msgList, umList:umList]
+			[actList:actList, aaList:aaList, userList:userList, uaList:uaList, msgList:msgList, umList:umList, iaList:iaList]
 		}catch(Exception e){
 			log.error(e.getMessage());
 		}
