@@ -1,6 +1,8 @@
 package com.soco
 
 import grails.converters.JSON
+import java.text.SimpleDateFormat
+import java.util.Date
 import org.codehaus.groovy.grails.web.json.JSONObject;
 
 class Message {
@@ -51,7 +53,8 @@ class Message {
 			}
 			
 			if(!error && jsonObj.containsKey("send_date_time") ){
-				this.send_date_time = jsonObj.get("send_date_time")
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.send_date_time = formatter.parse(jsonObj.get("send_date_time"));
 			}else{
 				jsonStr = "{error:'send_date_time',status:'failure'}"
 				error = true
@@ -91,24 +94,24 @@ class Message {
 	}
 	
 	def toJsonString(){
-		return "{from_type:"+this.from_type
-			 + ",from_id:'" + this.from_id
-			 + "',to_type:" + this.to_type 
-			 + ",to_id:'" + this.to_id 
-			 + "',send_date_time:'" + this.send_date_time
-			 + "',context_type:" + this.context_type
-			 + ",context:'" + this.context
-			 + "'}";
+		return "{from_type:"+this.from_type +
+			 ",from_id:'" + this.from_id +
+			 "',to_type:" + this.to_type  +
+			 ",to_id:'" + this.to_id  +
+			 "',send_date_time:'" + this.send_date_time.format("yyyy-MM-dd HH:mm:ss") +
+			 "',context_type:" + this.context_type +
+			 ",context:'" + this.context +
+			 "'}"; 
 	}
 	
 	def toJsonString(key, value){
-		return "{from_type:"+this.from_type
-			 + ",from_id:'" + this.from_id
-			 + "',to_type:" + this.to_type
-			 + ",to_id:'" + this.to_id
-			 + "',send_date_time:'" + this.send_date_time
-			 + "',context_type:" + this.context_type
-			 + ",context:'" + this.context
-			 + "'," + key + ":'" + vavlue + "'}";
+		return "{from_type:"+this.from_type +
+			  ",from_id:'" + this.from_id +
+			  "',to_type:" + this.to_type +
+			  ",to_id:'" + this.to_id +
+			  "',send_date_time:'" + this.send_date_time.format("yyyy-MM-dd HH:mm:ss") +
+			  "',context_type:" + this.context_type +
+			  ",context:'" + this.context +
+			  "'," + key + ":'" + value + "'}";
 	}
 }

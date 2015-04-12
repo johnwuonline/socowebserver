@@ -14,7 +14,7 @@ class MessageController {
     def index() { }
 	
 	
-	def convert2UserMsg(Message msg){
+	def convert2UserMsg(Message msg, currentUserID){
 		def msgList = new ArrayList();
 		
 		switch (msg.to_type) {
@@ -26,6 +26,7 @@ class MessageController {
 					um.from_type = msg.from_type;
 					um.from_id = msg.from_id;
 					um.to_user_id = user.getId();
+					um.message_id = msg.getId();
 					um.status = UserMessageController.STATUS_NOT_SENT;
 					def md5Str = msg.context_type.toString() + msg.context + msg.send_date_time;
 					um.signature = Utility.getMD5(md5Str);
@@ -34,17 +35,20 @@ class MessageController {
 				break;
 			case MessageController.TYPE_ACTIVITY_ID:
 				UserActivityController uac = new UserActivityController();
-				def userList = uac.getUsersByActivityID(msg.to_id.toBigInteger());
+				def userList = uac.getUsersByActivityID(msg.to_id.toLong());
 				userList.eachWithIndex { item, index ->
 					def ua = (UserActivity)item;
-					UserMessage um = new UserMessage();
-					um.from_type = msg.from_type;
-					um.from_id = msg.from_id;
-					um.to_user_id = ua.user_id;
-					um.status = UserMessageController.STATUS_NOT_SENT;
-					def md5Str = msg.context_type.toString() + msg.context + msg.send_date_time;
-					um.signature = Utility.getMD5(md5Str);
-					msgList.add(um);
+					if(ua.user_id != currentUserID){
+						UserMessage um = new UserMessage();
+						um.from_type = msg.from_type;
+						um.from_id = msg.from_id;
+						um.to_user_id = ua.user_id;
+						um.message_id = msg.getId();
+						um.status = UserMessageController.STATUS_NOT_SENT;
+						def md5Str = msg.context_type.toString() + msg.context + msg.send_date_time;
+						um.signature = Utility.getMD5(md5Str);
+						msgList.add(um);
+					}
 				}
 				break;
 			default:

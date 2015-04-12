@@ -56,6 +56,7 @@ class ExchangeController {
 	 * */
 	def sendOut(){
 		def jsonObject = getRequestJSON();
+		def user_id = springSecurityService.currentUser.id;
 		Message message = new Message();
 		JSONObject answer = message.parseJsonObject(jsonObject);
 		
@@ -63,7 +64,7 @@ class ExchangeController {
 			if(message.save()){
 				//convert to user message
 				MessageController mc = new MessageController();
-				def userMsgList = mc.convert2UserMsg(message);
+				def userMsgList = mc.convert2UserMsg(message, user_id);
 				userMsgList.eachWithIndex { item, index ->
 					def um = (UserMessage)item;
 					if(um.save()){
@@ -133,15 +134,25 @@ class ExchangeController {
 	def ackReceivedMsg(){
 		JSONObject json = new JSONObject();
 		try{
-			def sigList = getRequestValueByNameFromJSON(getRequestJSON(), "ack");
-			sigList.eachWithIndex { item, index ->
-				if(item instanceof JSONObject){
-					def signature = getRequestValueByNameFromJSON(item, "signature");
-					def sql = "delete UserMessage where signature='"+signature+"' and status="+UserMessageController.STATUS_SENT;
-					def ret = UserMessage.executeUpdate(sql);
+			def sigList;
+			def ret;
+			(ret, sigList) = getRequestValueByNameFromJSON(getRequestJSON(), "ack");
+			if(ret){
+				sigList.eachWithIndex { item, index ->
+					if(item instanceof JSONObject){
+						def signature
+						(ret, signature) = getRequestValueByNameFromJSON(item, "signature");
+						if(ret){
+							def sql = "delete UserMessage where signature='"+signature+"' and status="+UserMessageController.STATUS_SENT;
+							ret = UserMessage.executeUpdate(sql);
+						}else{
+						}
+					}
 				}
+				json.put("status", MobileController.SUCCESS);
+			}else{
+				json.put("status", MobileController.FAIL);
 			}
-			json.put("status", MobileController.SUCCESS);
 		}catch(Exception e){
 			log.error(e.getMessage());
 			json.put("status", MobileController.FAIL);

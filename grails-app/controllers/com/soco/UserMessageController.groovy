@@ -21,8 +21,8 @@ class UserMessageController {
 					def msg = Message.get(um.message_id);
 					msgList.add(msg.toJsonString("signature",um.signature));
 					//
-					um.status = STATUS_SENT;
-					um.save();
+					sql = "update UserMessage set status="+STATUS_SENT+" where id="+um.getId();
+					UserMessage.executeUpdate(sql);
 				}
 			}
 		}catch(Exception e){

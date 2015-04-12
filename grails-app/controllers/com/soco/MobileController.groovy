@@ -726,7 +726,17 @@ class MobileController {
 			inviteList.eachWithIndex { item, index->
 				inviteAList.add(item.toJsonString())
 			}
-			json.put("invitation", inviteAList.toString())
+			if(inviteAList.size() > 0){
+				json.put("invitation", inviteAList.toString())
+			}
+			/* check user message table and infor user
+			 * { message: "true" ]
+			 * */
+			UserMessageController umc = new UserMessageController();
+			if(umc.getNumOfUserMsgByUserID(user_id) > 0){
+				json.put("message","true");
+			}
+			
 		}catch(Exception e){
 			log.error(e.message)
 			json.put("status", MobileController.FAIL);
@@ -757,7 +767,7 @@ class MobileController {
 			(ret, aid) = getRequestValueByNameFromJSON(getRequestJSON(), "activity");
 			if(ret){
 				InviteActivityController iac = new InviteActivityController();
-				ret = iac.updateStatusByEmailActivityID(email, user_id, 1);
+				ret = iac.updateStatusByEmailActivityID(email, aid, 1);
 				if(ret){
 					/*
 					 * add activity attribute
@@ -770,6 +780,7 @@ class MobileController {
 					ActivityController ac = new ActivityController();
 					json = ac.getActivityByID(aid);
 				}else{
+					json = new JSONObject();
 					json.put("status", MobileController.FAIL);
 				}
 			}else{

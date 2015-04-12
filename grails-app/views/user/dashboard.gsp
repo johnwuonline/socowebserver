@@ -72,6 +72,7 @@
     Message information:<br>
 	    <table>
 	        <tr>
+	            <td>id</td>
 	            <td>fromType</td>
 	            <td>fromID</td>
 	            <td>toType</td>
@@ -81,6 +82,7 @@
 	        </tr>
 	        <g:each in="${msgList}" var="msg">
 	        <tr>
+	            <td>${msg.id}</td>
 	            <td>${msg.from_type}</td>
 	            <td>${msg.from_id}</td>
 	            <td>${msg.to_type}</td>
@@ -96,6 +98,7 @@
     User Message information:<br>
 	    <table>
 	        <tr>
+	            <td>id</td>
 	            <td>fromType</td>
 	            <td>fromID</td>
 	            <td>userID</td>
@@ -105,6 +108,7 @@
 	        </tr>
 	        <g:each in="${umList}" var="um">
 	        <tr>
+	            <td>${um.id}</td>
 	            <td>${um.from_type}</td>
 	            <td>${um.from_id}</td>
 	            <td>${um.to_user_id}</td>
