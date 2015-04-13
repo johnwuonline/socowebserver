@@ -173,8 +173,8 @@ class MobileController {
 	 * @param in
 	 	{
 		  "activity":1,
-		  "attribute":[{name:location,index:1,type:string,value:hong kong},
-		  			   {name:start time,index:1,type:string,value:2015-03-23}]
+		  "attribute":[{name:location,type:string,value:'hong kong'},
+		  			   {name:'start time',type:string,value:'2015-03-23'}]
 		}
 		
 		@return
@@ -203,14 +203,32 @@ class MobileController {
 							if(item instanceof JSONObject){
 								ActivityAttribute aa = new ActivityAttribute();
 								if(aa.parseJsonObject(item)){
+									sql = "from ActivityAttribute where activity_id="+aid+" and name='"+aa.name+"' and type='"+aa.type+"' and value='"+aa.value+"'";
+									def aaList = ActivityAttribute.executeQuery(sql);
+									if(aaList.size() == 0){
+										aa.activity_id = aid;
+										aa.create_date = new Date();
+										aa.last_modify_date = new Date();
+										aa.create_user_id = user_id;
+										aa.last_modify_user_id = user_id;
+										if(aa.save()){
+											log.debug("activity attribute save successfully.activity id:"+aid+", name:"+aa.name);
+										}else{
+											ret = false;
+										}
+									}else{
+										ret = false;
+									}
+									/*
 									ActivityAttributeController aac = new ActivityAttributeController()
-									if(aac.addAttribute(aa.activity_id, aa.name, aa.type, aa.value, user_id)){
-										log.debug("activity attribute save successfully.activity id:"+aa.activity_id+", name:"+aa.name);
+									if(aac.addAttribute(aid, aa.name, aa.type, aa.value, user_id)){
+										log.debug("activity attribute save successfully.activity id:"+aid+", name:"+aa.name);
 									}else{
 										ret = false;
 										attrList.add(aa.toJsonString());
-										log.debug("activity attribute save failed. activity id:"+aa.activity_id+", name:"+aa.name);
+										log.debug("activity attribute save failed. activity id:"+aid+", name:"+aa.name);
 									}
+									*/
 								} else {
 									ret = false;
 									log.debug("there are some errors in request message.activity id:"+aid)
@@ -275,8 +293,10 @@ class MobileController {
 								ActivityAttribute aa = new ActivityAttribute()
 								if(aa.parseJsonObject(item)){
 									def new_value;
-									(ret, new_value) = getRequestValueByNameFromJSON(jsonObject, "new_value")
-									if(ret){
+									def flag;
+									aa.activity_id = aid;
+									(flag, new_value) = getRequestValueByNameFromJSON(item, "new_value")
+									if(flag){
 										ActivityAttributeController aac = new ActivityAttributeController()
 										if(aac.updateAttribute(aa.activity_id, aa.name, aa.type, aa.value, new_value, user_id)){
 											log.debug("activity attribute update successfully.activity id:"+aa.activity_id+", name:"+aa.name);
@@ -353,6 +373,7 @@ class MobileController {
 								ActivityAttribute aa = new ActivityAttribute()
 								if(aa.parseJsonObject(item)){
 									ActivityAttributeController aac = new ActivityAttributeController()
+									aa.activity_id = aid;
 									if(aac.deleteAttribute(aa.activity_id, aa.name, aa.type, aa.value)){
 										log.debug("activity attribute update successfully.activity id:"+aa.activity_id+", name:"+aa.name);
 									}else{

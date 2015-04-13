@@ -148,6 +148,7 @@ log4j.main = {
 				error "logFile"
 			}
 			development {
+				debug "logFile", "stdout"
 				error "logFile", "stdout"
 			}
 		}
