@@ -7,7 +7,7 @@ class ActivityAttributeController {
 	boolean addAttribute(aid, name, type, value, uid){
 		boolean ret = false;
 		try{
-			String sql = "from ActivityAttribute where aid="+aid+" and name='"+name+"' and type='"+type+"' and value='"+value+"'";
+			String sql = "from ActivityAttribute where activity_id="+aid+" and name='"+name+"' and type='"+type+"' and value='"+value+"'";
 			def aaList = ActivityAttribute.executeQuery(sql);
 			if(aaList.size() == 0){
 				Date date = new Date();
@@ -28,7 +28,7 @@ class ActivityAttributeController {
 	boolean updateAttribute(aid, name, type, old_value, new_value, uid){
 		boolean ret = false;
 		try{
-			String sql = "from ActivityAttribute where aid="+aid+" and name='"+name+"' and type='"+type+"' and value='"+old_value+"'"
+			String sql = "from ActivityAttribute where activity_id="+aid+" and name='"+name+"' and type='"+type+"' and value='"+old_value+"'"
 			def aaList = ActivityAttribute.executeQuery(sql)
 			if(aaList.size() == 1){
 				Date date = new Date()
@@ -51,7 +51,7 @@ class ActivityAttributeController {
 	boolean deleteAttribute(aid, name, type, value){
 		boolean ret = false;
 		try{
-			String sql = "from ActivityAttribute where aid="+aid+" and name='"+name+"' and type='"+type+"' and value='"+value+"'"
+			String sql = "from ActivityAttribute where activity_id="+aid+" and name='"+name+"' and type='"+type+"' and value='"+value+"'"
 			def aaList = ActivityAttribute.executeQuery(sql)
 			if(aaList.size() == 1){
 				long aaid = aaList[0].getId()

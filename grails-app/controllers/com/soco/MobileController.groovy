@@ -694,7 +694,14 @@ class MobileController {
 	}
 	
 	/*HeartBeat
-	 * 
+	 * @param in NONE
+	 * @return 
+	 	{
+	 		"status":"success",
+	 		"invitation":"[ {inviter:'',activity:1,date:'2015-04-06 11:17:33.0'}, 
+	 						{inviter:'abc123',activity:1,date:'2015-04-06 19:09:42.0'}]",
+			"message": "true"
+		}
 	 * */
 	def HeartBeat(){
 		JSONObject json = new JSONObject()
@@ -730,7 +737,7 @@ class MobileController {
 				json.put("invitation", inviteAList.toString())
 			}
 			/* check user message table and infor user
-			 * { message: "true" ]
+			 * { message: "true" }
 			 * */
 			UserMessageController umc = new UserMessageController();
 			if(umc.getNumOfUserMsgByUserID(user_id) > 0){
