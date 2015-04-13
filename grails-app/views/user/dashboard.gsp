@@ -12,12 +12,18 @@
 	        	<td>ID</td>
 	            <td>Name</td>
 	            <td>Email</td>
+	            <td>MPhone</td>
+	            <td>CreateDate</td>
+	            <td>LastLoginTime</td>
 	        </tr>
 	        <g:each in="${userList}" var="user">
 	        <tr>
 	        	<td>${user.id}</td>
 	            <td>${user.username}</td>
 	            <td>${user.email}</td>
+	            <td>${user.mobilePhone}</td>
+	            <td>${user.createDate}</td>
+	            <td>${user.lastLoginTime}</td>
 	        </tr>
 	        </g:each>        
 	    </table>
