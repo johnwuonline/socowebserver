@@ -20,7 +20,9 @@ class ActivityController {
 			def sql = "from Activity where id=" + aid
 			def activityList = Activity.executeQuery(sql)
 			if(activityList.size() == 1){
-				json.put("activity", activityList[0].getJsonStr())
+				// put activity basic information
+				json.put("activity", activityList[0].getJsonStr());
+				// put activity attribute information
 				sql = "from ActivityAttribute where activity_id=" + aid
 				def actAttrList = ActivityAttribute.executeQuery(sql);
 				def actAttrIte = actAttrList.iterator()
@@ -29,6 +31,10 @@ class ActivityController {
 					attrList.add(item.toJsonString());
 				}
 				json.put("attributes", attrList.toString())
+				// put user activity information
+				UserActivityController uac = new UserActivityController();
+				json.put("members", uac.getUsersJsonStrByActivityId(aid));
+				// put status
 				json.put("status", MobileController.SUCCESS);
 			} else {
 				log.error("The activity number is not 1. It is " + activityList.size())

@@ -43,4 +43,16 @@ class UserActivityController {
 		}
 		return uaList;
 	}
+	
+	def getUsersJsonStrByActivityId(activityid){
+		def user_list = UserActivity.executeQuery("from UserActivity where activity_id=?",activityid);
+		def uaList = new ArrayList();
+		
+		user_list.eachWithIndex { item, index ->
+			def ua = (UserActivity)item;
+			uaList.add(ua.toJsonString());
+		}
+		
+		return uaList.toString();
+	}
 }
