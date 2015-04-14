@@ -94,7 +94,7 @@ class MobileController {
 	 * @param in
 	 	{
 		  "name":"activity2",
-		  “activity”:1
+		  "activity":1
 		}
 	   @return
 		{ status:’succcess’ }
