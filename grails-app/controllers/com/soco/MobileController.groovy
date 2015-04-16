@@ -790,7 +790,7 @@ class MobileController {
 			def user = (User)springSecurityService.currentUser;
 			def user_id = user.getId();
 			def email = user.email;
-			def aid;
+			long aid;
 			boolean ret;
 			(ret, aid) = getRequestValueByNameFromJSON(getRequestJSON(), "activity");
 			if(ret){
