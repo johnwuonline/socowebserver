@@ -11,6 +11,7 @@ class InviteActivity {
 	 * status: 0: not received , 1:accepted, 2:rejected
 	 * */
 	int status
+	String signature;
 
     static constraints = {
     }

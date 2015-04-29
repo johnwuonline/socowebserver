@@ -3,6 +3,8 @@ package com.soco
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.authentication.dao.NullSaltSource
+import socowebserver.Utility;
 
 class MobileController {
 	public static final String SUCCESS = "success";
@@ -638,6 +640,7 @@ class MobileController {
 	 * */
 	def inviteFriendShareActivity(){
 		JSONObject json = new JSONObject()
+		def inactid = -1;
 		try{
 			def email = "";
 			def username = ""
@@ -669,6 +672,8 @@ class MobileController {
 				inact.activity_id = aid;
 				inact.invite_time = new Date();
 				inact.status = 0;
+				def md5Str = Utility.getMD5(inact.inviter_name+inact.inviter_id);
+				inact.signature = md5Str;
 				if(invitee){
 					// send an invitation in heartbeat
 					inact.invitee_email = invitee.email;
@@ -682,17 +687,45 @@ class MobileController {
 					if(email != ""){
 						inact.invitee_email = email
 						if(iac.addInviteActivity(inact)){
-							def conf = SpringSecurityUtils.securityConfig
-							def body = "hi, please click http://localhost:8090/socoserver/user/openSharedActivity to see the invatation."
-							def subjectStr = "An invitation from your friend"
-							mailService.sendMail {
-								to email
-								from conf.ui.register.emailFrom
-								subject subjectStr
-								html body
+							inactid = inact.getId();
+							//create user
+							User usee = new User();
+							String password = genRandomPass(8);
+							usee.username = email;
+							usee.email = email;
+							usee.password = springSecurityService.encodePassword(password, null);
+							usee.setCreateDate(new Date())
+							usee.setPlainPassword(password)
+							usee.setMobilePhone("12314143")
+							usee.setLastLoginTime(new Date())
+							usee.accountLocked = false;
+							usee.enabled = true;
+							if(usee.save()){
+								//save user role table
+								UserRole.create user, Role.findByAuthority("ROLE_USER")
+								
+								//
+								def conf = SpringSecurityUtils.securityConfig
+								def hostname = request.getServerName();
+								def port = request.getServerPort();
+								def body = "Dear friend, <br>Your friend " + inact.inviter_name + 
+										   " send you a message in SoCo. <br>"+
+										   " Our system create a free account for you. Login with your email "+email+" as username and your password is "+password+"<br>After login successfully, remember to change your password.<br>"+
+										   " Please to click <a href='http://"+hostname+":"+port+"/socoserver/user/openSharedActivity?id="+inact.getId()+"&sig="+md5Str+"'>here</a> to get the message with above account.<p>"+
+										   "best wishes,<p>by SoCo";
+								def subjectStr = "A message from "+inact.inviter_name;
+								mailService.sendMail {
+									to email
+									from conf.ui.register.emailFrom
+									subject subjectStr
+									html body
+								}
+								
+								json.put("status", MobileController.SUCCESS);
+							}else{
+								log.error("save user failed.")
+								json.put("status", MobileController.FAIL);
 							}
-							
-							json.put("status", MobileController.SUCCESS);
 						}else{
 							json.put("status", MobileController.FAIL);
 						}
@@ -710,8 +743,22 @@ class MobileController {
 		}catch(Exception e){
 			log.error(e.message)
 			json.put("status", MobileController.FAIL);
+			if(inactid != -1){
+				InviteActivity.executeUpdate("delete from InviteActivity where id="+inactid);
+			}
 		}
 		render json
+	}
+	
+	
+	String genRandomPass(int len){
+		String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		Random rnd = new Random();
+		
+		StringBuilder sb = new StringBuilder( len );
+		for( int i = 0; i < len; i++ ) 
+			sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
+		return sb.toString();
 	}
 	
 	/*HeartBeat
