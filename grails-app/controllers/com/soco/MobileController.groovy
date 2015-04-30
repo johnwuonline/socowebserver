@@ -799,37 +799,53 @@ class MobileController {
 			/*
 			 * save heart beat information into db
 			 * */
-			HeartBeat hb = new HeartBeat()
+			HeartBeat hb = null;
+			def sql = "from HeartBeat where user_id="+user_id;
+			def hbList = HeartBeat.executeQuery(sql);
+			if(hbList && hbList.size() > 0){
+				//sql = "delete from HeartBeat where user_id="+user_id;
+				//HeartBeat.executeUpdate(sql);
+				hb = hbList[0];
+				if(!hb){
+					hb = new HeartBeat();
+				}
+			}else{
+				hb = new HeartBeat();
+			}
 			hb.user_id = user_id
-			hb.user_ip = "127.0.0.1"
-			hb.user_port = 0
+			hb.user_ip = request.getRemoteAddr();
+			if(!hb.user_ip){
+				hb.user_ip = "NA";
+			}
+			hb.user_port = (new org.springframework.security.web.PortResolverImpl()).getServerPort(request);
 			hb.datetime = new Date()
-			if(hb.save()){
+			if(hb.save(flush:true)){
+				/* check the invite activity table and infor user invitation
+				 * { invitation: [{inviter:"john", activity: 1, date:"2015-04-05 12:12:12"}, ... ]
+				 * */
+				def user_email = user.email
+				sql = "from InviteActivity where invitee_email='"+user_email+"' and status=0"
+				def inviteList = InviteActivity.executeQuery(sql)
+				def inviteAList = new ArrayList();
+				inviteList.eachWithIndex { item, index->
+					inviteAList.add(item.toJsonString())
+				}
+				if(inviteAList.size() > 0){
+					json.put("invitation", inviteAList.toString())
+				}
+				/* check user message table and infor user
+				 * { message: "true" }
+				 * */
+				UserMessageController umc = new UserMessageController();
+				if(umc.getNumOfUserMsgByUserID(user_id) > 0){
+					json.put("message","true");
+				}
+				
 				json.put("status", MobileController.SUCCESS);
 			}else{
 				Date d = new Date()
 				log.error("["+d.toString()+"] <HeartBeat>: save error. For user id:"+user_id)
 				json.put("status", MobileController.FAIL);
-			}
-			/* check the invite activity table and infor user invitation
-			 * { invitation: [{inviter:"john", activity: 1, date:"2015-04-05 12:12:12"}, ... ]
-			 * */
-			def user_email = user.email
-			def sql = "from InviteActivity where invitee_email='"+user_email+"' and status=0"
-			def inviteList = InviteActivity.executeQuery(sql)
-			def inviteAList = new ArrayList();
-			inviteList.eachWithIndex { item, index->
-				inviteAList.add(item.toJsonString())
-			}
-			if(inviteAList.size() > 0){
-				json.put("invitation", inviteAList.toString())
-			}
-			/* check user message table and infor user
-			 * { message: "true" }
-			 * */
-			UserMessageController umc = new UserMessageController();
-			if(umc.getNumOfUserMsgByUserID(user_id) > 0){
-				json.put("message","true");
 			}
 			
 		}catch(Exception e){
