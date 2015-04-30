@@ -4,14 +4,17 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONObject
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.authentication.dao.NullSaltSource
+import grails.plugin.springsecurity.ui.RegistrationCode
 import socowebserver.Utility;
 
 class MobileController {
 	public static final String SUCCESS = "success";
 	public static final String FAIL = "failure";
 	
+	def springSecurityUiService
 	def springSecurityService
 	def mailService
+	def saltSource
 
     def index() { 
 		render "This is for mobile!"
@@ -689,21 +692,9 @@ class MobileController {
 						if(iac.addInviteActivity(inact)){
 							inactid = inact.getId();
 							//create user
-							User usee = new User();
 							String password = genRandomPass(8);
-							usee.username = email;
-							usee.email = email;
-							usee.password = springSecurityService.encodePassword(password, null);
-							usee.setCreateDate(new Date())
-							usee.setPlainPassword(password)
-							usee.setMobilePhone("12314143")
-							usee.setLastLoginTime(new Date())
-							usee.accountLocked = false;
-							usee.enabled = true;
-							if(usee.save()){
-								//save user role table
-								UserRole.create user, Role.findByAuthority("ROLE_USER")
-								
+							//String password = "john@soco123";
+							if(createNewUser(email,email,password)){
 								//
 								def conf = SpringSecurityUtils.securityConfig
 								def hostname = request.getServerName();
@@ -750,6 +741,35 @@ class MobileController {
 		render json
 	}
 	
+	boolean createNewUser(username, email, password){
+		String salt = saltSource instanceof NullSaltSource ? null : username
+		User usee = new User();
+		usee.username = username;
+		usee.email = email;
+		//usee.password = springSecurityService.encodePassword(password, salt);
+		usee.plainPassword = password;
+		usee.setCreateDate(new Date())
+		usee.setPlainPassword(password)
+		usee.setMobilePhone("12314143")
+		usee.setLastLoginTime(new Date())
+		usee.accountLocked = false;
+		usee.enabled = true;
+		
+		RegistrationCode registrationCode = springSecurityUiService.register(usee, password, salt)
+		if (registrationCode == null || registrationCode.hasErrors()) {
+			def err = message(code: 'spring.security.ui.register.miscError')
+			log.warn(err)
+			return false;
+		}
+		
+		UserRole.create usee, Role.findByAuthority("ROLE_USER")
+		
+		registrationCode.delete();
+
+		springSecurityService.reauthenticate usee.username
+
+		return true;
+	}
 	
 	String genRandomPass(int len){
 		String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
