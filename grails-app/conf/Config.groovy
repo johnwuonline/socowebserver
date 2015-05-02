@@ -137,19 +137,28 @@ log4j.main = {
 						 layout: logLayoutPattern
 				  )
 		
+		appender new DailyRollingFileAppender(
+						name: "logErrorFile",
+						file: "logs/soco_error.log",
+						datePattern: "'.'yyyy-MM-dd",   //Rollover at midnight each day.
+						layout: logLayoutPattern
+				 )
+		
 		console name:"stdout",
 				layout: simplePattern
 	}
 	
 	root {
-		//debug()
+		debug "logFile"
+		error "logErrorFile"
+		
 		environments {
 			production {
-				error "logFile"
+				error "logErrorFile"
 			}
 			development {
 				debug "logFile", "stdout"
-				error "logFile", "stdout"
+				error "logErrorFile", "stdout"
 			}
 		}
 	}
@@ -166,10 +175,12 @@ log4j.main = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-   warn    'org.springframework',
+	warn   'org.springframework',
 		   'org.hibernate',
 		   'grails.plugins.springsecurity',
 		   'groovyx.net.http'
+		   
+	all    'grails.app'
 }
 
 
