@@ -699,11 +699,14 @@ class MobileController {
 								def conf = SpringSecurityUtils.securityConfig
 								def hostname = request.getServerName();
 								def port = request.getServerPort();
+								/*
 								def body = "Dear friend, <br>Your friend " + inact.inviter_name + 
 										   " send you a message in SoCo. <br>"+
 										   " Our system create a free account for you. Login with your email "+email+" as username and your password is "+password+"<br>After login successfully, remember to change your password.<br>"+
 										   " Please to click <a href='http://"+hostname+":"+port+"/socoserver/user/openSharedActivity?id="+inact.getId()+"&sig="+md5Str+"'>here</a> to get the message with above account.<p>"+
 										   "best wishes,<p>by SoCo";
+								*/
+								def body = getInviteEmailBody(inact.inviter_name,email,password,hostname, port,inact.getId(),md5Str);
 								def subjectStr = "A message from "+inact.inviter_name;
 								mailService.sendMail {
 									to email
@@ -739,6 +742,66 @@ class MobileController {
 			}
 		}
 		render json
+	}
+	
+	
+	String getInviteEmailBody(name, email, password, hostname, port, inacid, md5){
+		return """
+			<table bgcolor="#FAFAFA" width="100%" border="0" cellspacing="0" cellpadding="0" style="min-width:332px;max-width:600px;border:1px solid #f0f0f0;border-bottom:1px solid #c0c0c0;border-top:0;border-bottom-left-radius:3px;border-bottom-right-radius:3px">
+			    <tbody>
+				<tr height="16px">
+				    <td width="32px" rowspan="3"></td>
+				    <td></td>
+				    <td width="32px" rowspan="3"></td>
+				</tr>
+				<tr>
+				    <td>
+					<table style="min-width:300px" border="0" cellspacing="0" cellpadding="0">
+					    <tbody>
+						<tr>
+						    <td style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:13px;color:#202020;line-height:1.5">
+						    Hi there,
+						    </td>
+						</tr>
+						<tr>
+						    <td style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:13px;color:#202020;line-height:1.5">
+							<table border="0" cellspacing="0" cellpadding="0" style="margin-top:48px;margin-bottom:48px">
+							    <tbody>
+								<tr valign="top">
+								    <td width="32px"></td>
+								    <td align="center"></td>
+								    <td style="line-height:1.5">
+									    <span style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:16px;color:#202020">
+									    	Your friend ${name} send a message in SoCo.<br>
+											You could read the message to click <a href='http://${hostname}:${port}/socoserver/user/openSharedActivity?id=${inacid}&sig=${md5}'>here</a> 
+											and login with the free account for you by ${email} as username and ${password} as password.
+									    </span><br><br>
+									    <span style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:13px;color:#727272">
+									    	Have a nice day!
+									    </span>
+								    </td>
+								</tr>
+							    </tbody>
+							</table>
+						    </td>
+						</tr>
+						<tr>
+						    <td style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:13px;color:#202020;line-height:1.5">
+							    Sincerely yours,<br>The SoCo team
+						    </td>
+						</tr>
+						<tr height="16px">
+						</tr>
+						
+					    </tbody>
+					</table>
+				    </td>
+				</tr>
+				<tr height="32px">
+				</tr>
+			    </tbody>
+			</table>
+			"""
 	}
 	
 	boolean createNewUser(username, email, password){
