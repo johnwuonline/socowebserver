@@ -699,13 +699,6 @@ class MobileController {
 								def conf = SpringSecurityUtils.securityConfig
 								def hostname = request.getServerName();
 								def port = request.getServerPort();
-								/*
-								def body = "Dear friend, <br>Your friend " + inact.inviter_name + 
-										   " send you a message in SoCo. <br>"+
-										   " Our system create a free account for you. Login with your email "+email+" as username and your password is "+password+"<br>After login successfully, remember to change your password.<br>"+
-										   " Please to click <a href='http://"+hostname+":"+port+"/socoserver/user/openSharedActivity?id="+inact.getId()+"&sig="+md5Str+"'>here</a> to get the message with above account.<p>"+
-										   "best wishes,<p>by SoCo";
-								*/
 								def body = getInviteEmailBody(inact.inviter_name,email,password,hostname, port,inact.getId(),md5Str);
 								def subjectStr = "A message from "+inact.inviter_name;
 								mailService.sendMail {
@@ -968,4 +961,81 @@ class MobileController {
 		}
 		render json;
 	}
+	
+	
+	/* addFileToActivity
+	 * 
+	 * @param in 
+	 	{
+	 		activity:1,
+	 		file_name:'guide.pdf',
+	 		uri:'http://xxx.xxx/xx/guide.pdf',
+	 		remote_path:'xxx://xxx/xx/xxx',
+	 		local_path:'/abc/def/guide.pdf',
+	 		user:'john'
+	 	}
+	  @return
+	  	{
+	  		status:"success",
+	  		id:1
+	  	}
+	  	OR
+	  	{
+	  		status:"failure"
+	  	}
+	 * */
+	def addFileToActivity() {
+		
+	}
+	
+	/* updateFileToActivity
+	 *  
+	 	@param in 
+	 	{
+	 		activity:1,
+	 		file_id: 1,
+	 		file_name:'guide.pdf',
+	 		uri:'http://xxx.xxx/xx/guide.pdf',
+	 		remote_path:'xxx://xxx/xx/xxx',
+	 		local_path:'/abc/def/guide.pdf',
+	 		user:'john'
+	 	}
+	 	including file_name, uri, remote_path, local_path or user, one or more which to be updated
+	  @return
+	  	{
+	  		status:"success"
+	  	}
+	  	OR
+	  	{
+	  		status:"failure"
+	  	}
+	 * */
+	def updateFileToActivity(){
+		
+	}
+	
+	/*deleteFileToActivity
+	 * 
+	 	@param in
+	 	{
+	 		activity: 1,
+	 		file_id: 1
+	 	}
+	 	
+	 	@return
+	  	{
+	  		status:"success"
+	  	}
+	  	OR
+	  	{
+	  		status:"failure"
+	  	}
+	 * */
+	def deleteFileToActivity(){
+		
+	}
+	
+	/*
+	 * 
+	 * */
 }
