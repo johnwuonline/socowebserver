@@ -1041,7 +1041,7 @@ class MobileController {
 							json.put("status", MobileController.SUCCESS);
 							json.put("id", afid);
 						}else{
-							file.delete();
+							file.delete(flush:true);
 							json.put("status", MobileController.FAIL);
 						}
 					}else{
@@ -1198,9 +1198,9 @@ class MobileController {
 						if(afList.size() > 0){
 							Files file = Files.get(fid);
 							if(file){
-								file.delete();
+								file.delete(flush:true);
 								ActivityFile af = afList[0];
-								af.delete();
+								af.delete(flush:true);
 								json.put("status", MobileController.SUCCESS);
 							}else{
 								json.put("status", MobileController.FAIL);
