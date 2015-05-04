@@ -985,7 +985,79 @@ class MobileController {
 	  	}
 	 * */
 	def addFileToActivity() {
-		
+		JSONObject json = new JSONObject();;
+		try{
+			def user = (User)springSecurityService.currentUser;
+			def user_id = user.getId();
+			def email = user.email;
+			def username = user.username;
+			long aid;
+			boolean ret;
+			(ret, aid) = getRequestValueByNameFromJSON(getRequestJSON(), "activity");
+			if(ret){
+				////check the activity whether belong to current user
+				def sql = "from UserActivity where user_id="+user_id+" and activity_id="+aid;
+				def uaList = UserActivity.executeQuery(sql);
+				if(uaList.size() > 0){
+					def fileName;
+					def uri;
+					def remotePath;
+					def localPath;
+					def userName;
+					(ret, fileName) = getRequestValueByNameFromJSON(getRequestJSON(), "file_name");
+					if(!ret){
+						fileName = "";
+					}
+					(ret, uri) = getRequestValueByNameFromJSON(getRequestJSON(), "uri");
+					if(!ret){
+						uri = "";
+					}
+					(ret, remotePath) = getRequestValueByNameFromJSON(getRequestJSON(), "remote_path");
+					if(!ret){
+						remotePath = "";
+					}
+					(ret, localPath) = getRequestValueByNameFromJSON(getRequestJSON(), "local_path");
+					if(!ret){
+						localPath = "";
+					}
+					(ret, userName) = getRequestValueByNameFromJSON(getRequestJSON(), "user");
+					if(!ret){
+						userName = "";
+					}
+					Files file = new Files();
+					file.display_name = fileName;
+					file.uri = uri;
+					file.remote_path = remotePath;
+					file.local_path = localPath;
+					file.username = userName;
+					file.user_id = user_id;
+					if(file.save()){
+						def fid = file.getId();
+						ActivityFile af = new ActivityFile();
+						af.file_id = fid;
+						af.activity_id = aid;
+						if(af.save()){
+							def afid = af.getId();
+							json.put("status", MobileController.SUCCESS);
+							json.put("id", afid);
+						}else{
+							file.delete();
+							json.put("status", MobileController.FAIL);
+						}
+					}else{
+						json.put("status", MobileController.FAIL);
+					}
+				}else{
+					json.put("status", MobileController.FAIL);
+				}
+			}else{
+				json.put("status", MobileController.FAIL);
+			}
+		}catch(Exception e){
+			log.error(e.message);
+			json.put("status", MobileController.FAIL);
+		}
+		render json;
 	}
 	
 	/* updateFileToActivity
@@ -1011,7 +1083,79 @@ class MobileController {
 	  	}
 	 * */
 	def updateFileToActivity(){
-		
+		JSONObject json = new JSONObject();;
+		try{
+			def user = (User)springSecurityService.currentUser;
+			def user_id = user.getId();
+			def email = user.email;
+			def username = user.username;
+			long aid;
+			long fid;
+			boolean ret;
+			(ret, aid) = getRequestValueByNameFromJSON(getRequestJSON(), "activity");
+			if(ret){
+				(ret, fid) = getRequestValueByNameFromJSON(getRequestJSON(), "file_id");
+				if(ret){
+					////check the activity whether belong to current user
+					def sql = "from UserActivity where user_id="+user_id+" and activity_id="+aid;
+					def uaList = UserActivity.executeQuery(sql);
+					if(uaList.size() > 0){
+						sql = "from ActivityFile where activity_id="+aid+" and file_id="+fid;
+						def afList = ActivityFile.executeQuery(sql);
+						if(afList.size() > 0){
+							def fileName;
+							def uri;
+							def remotePath;
+							def localPath;
+							def userName;
+							Files file = Files.get(fid);
+							if(file){
+								(ret, fileName) = getRequestValueByNameFromJSON(getRequestJSON(), "file_name");
+								if(ret){
+									file.display_name = fileName;
+								}
+								(ret, uri) = getRequestValueByNameFromJSON(getRequestJSON(), "uri");
+								if(ret){
+									file.uri = uri;
+								}
+								(ret, remotePath) = getRequestValueByNameFromJSON(getRequestJSON(), "remote_path");
+								if(ret){
+									file.remote_path = remotePath;
+								}
+								(ret, localPath) = getRequestValueByNameFromJSON(getRequestJSON(), "local_path");
+								if(ret){
+									file.local_path = localPath;
+								}
+								(ret, userName) = getRequestValueByNameFromJSON(getRequestJSON(), "user");
+								if(ret){
+									file.username = userName;
+								}
+								
+								if(file.save(flush:true)){
+									json.put("status", MobileController.SUCCESS);
+								}else{
+									json.put("status", MobileController.FAIL);
+								}
+							}else{
+								json.put("status", MobileController.FAIL);
+							}
+						}else{
+							json.put("status", MobileController.FAIL);
+						}
+					}else{
+						json.put("status", MobileController.FAIL);
+					}
+				}else{
+					json.put("status", MobileController.FAIL);
+				}
+			}else{
+				json.put("status", MobileController.FAIL);
+			}
+		}catch(Exception e){
+			log.error(e.message);
+			json.put("status", MobileController.FAIL);
+		}
+		render json;
 	}
 	
 	/*deleteFileToActivity
@@ -1032,7 +1176,52 @@ class MobileController {
 	  	}
 	 * */
 	def deleteFileToActivity(){
-		
+		JSONObject json = new JSONObject();;
+		try{
+			def user = (User)springSecurityService.currentUser;
+			def user_id = user.getId();
+			def email = user.email;
+			def username = user.username;
+			long aid;
+			long fid;
+			boolean ret;
+			(ret, aid) = getRequestValueByNameFromJSON(getRequestJSON(), "activity");
+			if(ret){
+				(ret, fid) = getRequestValueByNameFromJSON(getRequestJSON(), "file_id");
+				if(ret){
+					////check the activity whether belong to current user
+					def sql = "from UserActivity where user_id="+user_id+" and activity_id="+aid;
+					def uaList = UserActivity.executeQuery(sql);
+					if(uaList.size() > 0){
+						sql = "from ActivityFile where activity_id="+aid+" and file_id="+fid;
+						def afList = ActivityFile.executeQuery(sql);
+						if(afList.size() > 0){
+							Files file = Files.get(fid);
+							if(file){
+								file.delete();
+								ActivityFile af = afList[0];
+								af.delete();
+								json.put("status", MobileController.SUCCESS);
+							}else{
+								json.put("status", MobileController.FAIL);
+							}
+						}else{
+							json.put("status", MobileController.FAIL);
+						}
+					}else{
+						json.put("status", MobileController.FAIL);
+					}
+				}else{
+					json.put("status", MobileController.FAIL);
+				}
+			}else{
+				json.put("status", MobileController.FAIL);
+			}
+		}catch(Exception e){
+			log.error(e.message);
+			json.put("status", MobileController.FAIL);
+		}
+		render json;
 	}
 	
 	/*

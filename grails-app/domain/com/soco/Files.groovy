@@ -6,6 +6,8 @@ class Files {
 	String remote_path;
 	String local_path;
 	String upload_user;
+	String username;
+	long user_id;
 	Date dateCreated;
 	Date lastUpdated;
 
