@@ -844,7 +844,8 @@ class MobileController {
 	 		"status":"success",
 	 		"invitation":"[ {inviter:'',activity:1,date:'2015-04-06 11:17:33.0'}, 
 	 						{inviter:'abc123',activity:1,date:'2015-04-06 19:09:42.0'}]",
-			"message": "true"
+			"message": "true",
+			"activity_event": "true"
 		}
 	 * */
 	def HeartBeat(){
@@ -877,7 +878,7 @@ class MobileController {
 			hb.datetime = new Date()
 			if(hb.save(flush:true)){
 				/* check the invite activity table and infor user invitation
-				 * { invitation: [{inviter:"john", activity: 1, date:"2015-04-05 12:12:12"}, ... ]
+				 * { "invitation": [{inviter:"john", activity: 1, date:"2015-04-05 12:12:12"}, ... ]
 				 * */
 				def user_email = user.email
 				sql = "from InviteActivity where invitee_email='"+user_email+"' and status=0"
@@ -890,11 +891,18 @@ class MobileController {
 					json.put("invitation", inviteAList.toString())
 				}
 				/* check user message table and infor user
-				 * { message: "true" }
+				 * { "message": "true" }
 				 * */
 				UserMessageController umc = new UserMessageController();
 				if(umc.getNumOfUserMsgByUserID(user_id) > 0){
 					json.put("message","true");
+				}
+				/* check activity event table and infor user
+				 * { "activity_event": "true" }
+				 * */
+				ActivityEventController aec = new ActivityEventController();
+				if(aec.getNumOfActivityEventByUserID(user_id) > 0){
+					json.put("activity_event","true");
 				}
 				
 				json.put("status", MobileController.SUCCESS);
@@ -1224,7 +1232,18 @@ class MobileController {
 		render json;
 	}
 	
-	/*
-	 * 
+	/* getActivityEvent
+	 * @param in NA
+	 * @return out
+		{
+			"status": "success",
+			"activity":1,
+			"event_operate_type": "[add, update, delete]",
+			"event_content_type": "[activity, attribute, file]",
+			"value":"{json format value}"
+		}
 	 * */
+	def getActivityEvent(){
+		
+	}
 }
