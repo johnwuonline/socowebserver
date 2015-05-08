@@ -183,6 +183,75 @@
 				        </g:each>        
 				    </table>
 			    </div>
+			    <div style="background:#b0e0e6">
+			    File information:<br>
+				    <table>
+				        <tr>
+				            <td>ID</td>
+				            <td>Name</td>
+				            <td>URI</td>
+				            <td>RemotePath</td>
+				            <td>LocalPath</td>
+				            <td>UserName</td>
+				            <td>UserID</td>
+				            <td>created</td>
+				            <td>updated</td>
+				        </tr>
+				        <g:each in="${fList}" var="item">
+				        <tr>
+				        	<td>${item.id}</td>
+				            <td>${item.display_name}</td>
+				            <td>${item.uri}</td>
+				            <td>${item.remote_path}</td>
+				            <td>${item.local_path}</td>
+				            <td>${item.username}</td>
+				            <td>${item.user_id}</td>
+				            <td>${item.dateCreated}</td>
+				            <td>${item.lastUpdated}</td>
+				        </tr>
+				        </g:each>        
+				    </table>
+			    </div>
+			    <div style="background:#eeeeee">
+			    Activity file:<br>
+				    <table>
+				        <tr>
+				            <td>ID</td>
+				            <td>ActivityID</td>
+				            <td>FileID</td>
+				        </tr>
+				        <g:each in="${afList}" var="item">
+				        <tr>
+				            <td>${item.id}</td>
+				            <td>${item.activity_id}</td>
+				            <td>${item.file_id}</td>
+				        </tr>
+				        </g:each>        
+				    </table>
+			    </div>
+			    <div style="background:#b0e0e6">
+			    Activity Event:<br>
+				    <table>
+				        <tr>
+				            <td>ID</td>
+				            <td>UserID</td>
+				            <td>ActivityID</td>
+				            <td>EventOperateType</td>
+				            <td>EventContentType</td>
+				            <td>value</td>
+				        </tr>
+				        <g:each in="${aeList}" var="item">
+				        <tr>
+				        	<td>${item.id}</td>
+				            <td>${item.user_id}</td>
+				            <td>${item.activity_id}</td>
+				            <td>${item.event_operate_type}</td>
+				            <td>${item.event_content_type}</td>
+				            <td>${item.event_content_value}</td>
+				        </tr>
+				        </g:each>        
+				    </table>
+			    </div>
 		    </div>
 		</div>
 	</div>

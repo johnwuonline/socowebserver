@@ -2,6 +2,7 @@ package com.soco
 
 class ActivityEvent {
 	
+	long user_id;
 	long activity_id;
 	/* operate type: add, update, delete */
 	String event_operate_type;

@@ -82,13 +82,22 @@ class UserController extends grails.plugin.springsecurity.ui.UserController {
 			def umList = UserMessage.executeQuery(sql);
 			
 			sql = "from InviteActivity";
-			def iaList = UserMessage.executeQuery(sql);
+			def iaList = InviteActivity.executeQuery(sql);
+			
+			sql = "from Files";
+			def fList = Files.executeQuery(sql);
+			
+			sql = "from ActivityFile";
+			def afList = ActivityFile.executeQuery(sql);
+			
+			sql = "from ActivityEvent";
+			def aeList = ActivityEvent.executeQuery(sql);
 			
 			//
 			def currentUser = springSecurityService.currentUser;
 			
 			//
-			[currentUser:currentUser, actList:actList, aaList:aaList, userList:userList, uaList:uaList, msgList:msgList, umList:umList, iaList:iaList]
+			[currentUser:currentUser, actList:actList, aaList:aaList, userList:userList, uaList:uaList, msgList:msgList, umList:umList, iaList:iaList, fList:fList, afList:afList, aeList:aeList]
 		}catch(Exception e){
 			log.error(e.getMessage());
 		}

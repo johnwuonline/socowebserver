@@ -113,6 +113,7 @@ class MobileController {
 			long aid
 			def name
 			boolean ret1, ret2;
+			def uid = springSecurityService.currentUser.id;
 			(ret1, aid) = getRequestValueByNameFromJSON(jsonObject, "activity");
 			(ret2, name) = getRequestValueByNameFromJSON(jsonObject, "name");
 			if(ret1){
@@ -121,6 +122,9 @@ class MobileController {
 				if(ret2 && activity.size() == 1) {
 					Activity.executeUpdate("update Activity set name=? where id=?", [name,aid])
 					json.put("status", MobileController.SUCCESS);
+					//update the activity event
+					ActivityEventController aec = new ActivityEventController();
+					aec.addActivityUpdateEvent(uid, aid, name);
 				} else {
 					json.put("status", MobileController.FAIL);
 					json.put("message", "activity is not existent.");
@@ -1239,7 +1243,7 @@ class MobileController {
 			"status": "success",
 			"activity":1,
 			"event_operate_type": "[add, update, delete]",
-			"event_content_type": "[activity, attribute, file]",
+			"event_content_type": "[activity, attribute, file, user]",
 			"value":"{json format value}"
 		}
 	 * */
