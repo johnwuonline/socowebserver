@@ -1265,9 +1265,9 @@ class MobileController {
 	/* ackActivityEvent
 	 * @param in
 		{
-			"ack":[
-				{"signature":"sfe342lkj"},{...}
-			]
+		  "signature":[
+		    "0bd2944f49380f6c0479c20498361648","840c82edc234136bf45a573a62f6f28b"
+		  ]
 		}
 		@return 
 		{
@@ -1284,17 +1284,21 @@ class MobileController {
 			def user = (User)springSecurityService.currentUser;
 			def user_id = user.getId();
 			def ret;
-			def signature;
-			(ret, signature) = getRequestValueByNameFromJSON(getRequestJSON(), "signature");
+			def ackList;
+			(ret, ackList) = getRequestValueByNameFromJSON(getRequestJSON(), "signature");
 			if(ret){
-				def sql = "from ActivityEvent where user_id="+user_id+" and signature='"+signature+"'";
-				def aeList = ActivityEvent.executeQuery(sql);
-				if(aeList.size() > 0){
-					ActivityEvent ae = aeList[0];
-					ae.delete(flush:true);
-					json.put("status", MobileController.SUCCESS);
-				}else{
-					json.put("status", MobileController.FAIL);
+				if(ackList.size()){
+					ackList.eachWithIndex { item, index ->
+						def sql = "from ActivityEvent where user_id="+user_id+" and signature='"+item+"'";
+						def aeList = ActivityEvent.executeQuery(sql);
+						if(aeList.size() > 0){
+							ActivityEvent ae = aeList[0];
+							ae.delete(flush:true);
+							json.put("status", MobileController.SUCCESS);
+						}else{
+							json.put("status", MobileController.FAIL);
+						}
+					}
 				}
 			}else{
 				json.put("status", MobileController.FAIL);
