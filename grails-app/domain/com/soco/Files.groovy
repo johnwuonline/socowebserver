@@ -17,4 +17,14 @@ class Files {
 		local_path blank: true, nullable: true
     }
 	
+	def toJsonString(){
+		return "{'file_id':"+id+
+				",'file_name':'"+display_name+
+				"','uri':'"+uri+
+				"','remote_path':'"+remote_path+
+				"','local_path':'"+local_path+
+				"','username':'"+username+
+				"'}";
+	}
+	
 }

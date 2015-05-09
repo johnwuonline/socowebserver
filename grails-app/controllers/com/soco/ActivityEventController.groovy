@@ -43,7 +43,7 @@ class ActivityEventController {
 		return json;
 	}
 	
-	def addActivityUpdateEvent(uid, aid, value, operate){
+	def addActivityEvent(uid, aid, value, type, operate){
 		boolean ret = false;
 		try{
 			def sql = "from UserActivity where activity_id="+aid;
@@ -55,7 +55,7 @@ class ActivityEventController {
 					ActivityEvent ae = new ActivityEvent();
 					ae.user_id = ua.user_id;
 					ae.activity_id = aid;
-					ae.event_content_type = "activity";
+					ae.event_content_type = type;
 					ae.event_operate_type = operate;
 					ae.event_content_value = value;
 					def md5Str = ua.user_id.toString() + aid.toString() + ae.event_content_type + ae.event_operate_type + ae.event_content_value;
@@ -74,13 +74,6 @@ class ActivityEventController {
 		return ret;
 	}
 	
-	def addActivityAttributeEvent(uid, aid, attribute, operate){
-		
-	}
-	
-	def addUserActivityEvent(){
-		
-	}
 	
 	def addActivityFileEvent(){
 		

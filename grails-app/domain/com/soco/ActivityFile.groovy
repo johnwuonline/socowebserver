@@ -6,4 +6,8 @@ class ActivityFile {
 
     static constraints = {
     }
+	
+	def toJsonString(){
+		return "{'activity_id':"+activity_id+", 'file_id':"+file_id+"}";
+	}
 }

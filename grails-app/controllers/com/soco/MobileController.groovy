@@ -125,7 +125,7 @@ class MobileController {
 					//update the activity event
 					ActivityEventController aec = new ActivityEventController();
 					def value = "{'name':'"+name+"'}";
-					aec.addActivityUpdateEvent(uid, aid, value, "update");
+					aec.addActivityEvent(uid, aid, value, "activity", "update");
 				} else {
 					json.put("status", MobileController.FAIL);
 					json.put("message", "activity is not existent.");
@@ -165,8 +165,9 @@ class MobileController {
 					def achieved = true
 					Activity.executeUpdate("update Activity set is_archived=? where id=?", [achieved,aid])
 					json.put("status", MobileController.SUCCESS);
+					//
 					ActivityEventController aec = new ActivityEventController();
-					aec.addActivityUpdateEvent(uid, aid, "{}", "archive");
+					aec.addActivityEvent(uid, aid, "{}", "activity","archive");
 				} else {
 					json.put("status", MobileController.FAIL);
 					json.put("message", "activity is not existent.");
@@ -203,12 +204,12 @@ class MobileController {
 			def user_id = springSecurityService.currentUser.id;
 			boolean ret;
 			def attrList = new ArrayList();
+			def attributes;
 			(ret, aid) = getRequestValueByNameFromJSON(jsonObject, "activity");
 			if(ret){
 				def sql = "from Activity where id=" + aid;
 				def activity = Activity.executeQuery(sql);
 				if(activity.size() == 1) {
-					def attributes;
 					(ret, attributes) = getRequestValueByNameFromJSON(jsonObject, "attribute");
 					if(ret){
 						log.debug("attributes size:"+attributes.size());
@@ -251,6 +252,9 @@ class MobileController {
 			//
 			if(ret){
 				json.put("status", MobileController.SUCCESS);
+				//
+				ActivityEventController aec = new ActivityEventController();
+				aec.addActivityEvent(user_id, aid, attributes, "attribute", "add");
 			}else{
 				json.put("status", MobileController.FAIL);
 				json.put("attribute", attrList.toString());
@@ -282,12 +286,12 @@ class MobileController {
 			long aid;
 			boolean ret;
 			def attrList = new ArrayList();
+			def attributes;
 			(ret, aid) = getRequestValueByNameFromJSON(jsonObject, "activity");
 			if(ret){
 				def sql = "from Activity where id=" + aid
 				def activity = Activity.executeQuery(sql)
 				if(activity.size() == 1) {
-					def attributes;
 					(ret, attributes) = getRequestValueByNameFromJSON(jsonObject, "attribute")
 					if(ret){
 						log.debug("attributes size:"+attributes.size())
@@ -331,6 +335,9 @@ class MobileController {
 			//
 			if(ret){
 				json.put("status", MobileController.SUCCESS);
+				//
+				ActivityEventController aec = new ActivityEventController();
+				aec.addActivityEvent(user_id, aid, attributes, "attribute", "update");
 			}else{
 				json.put("status", MobileController.FAIL);
 				json.put("attribute", attrList.toString());
@@ -362,12 +369,12 @@ class MobileController {
 			long aid;
 			boolean ret;
 			def attrList = new ArrayList();
+			def attributes;
 			(ret, aid) = getRequestValueByNameFromJSON(jsonObject, "activity");
 			if(ret){
 				def sql = "from Activity where id=" + aid
 				def activity = Activity.executeQuery(sql)
 				if(activity.size() == 1) {
-					def attributes;
 					(ret, attributes) = getRequestValueByNameFromJSON(jsonObject, "attribute")
 					if(ret){
 						log.debug("attributes size:"+attributes.size())
@@ -403,6 +410,9 @@ class MobileController {
 			//
 			if(ret){
 				json.put("status", MobileController.SUCCESS);
+				//
+				ActivityEventController aec = new ActivityEventController();
+				aec.addActivityEvent(user_id, aid, attributes, "attribute", "delete");
 			}else{
 				json.put("status", MobileController.FAIL);
 				json.put("attribute", attrList.toString());
@@ -438,10 +448,11 @@ class MobileController {
 		JSONObject json = null
 		long aid;
 		boolean ret;
+		def uid = springSecurityService.currentUser.id;
 		(ret, aid) = getRequestValueByNameFromJSON(getRequestJSON(), "activity");
 		if(ret){
 			ActivityController ac = new ActivityController()
-			json = ac.getActivityByID(aid)
+			json = ac.getActivityByID(uid, aid);
 		} else {
 			json = new JSONObject()
 			json.put("status", MobileController.FAIL);
@@ -951,7 +962,11 @@ class MobileController {
 					 * get activity
 					 * */
 					ActivityController ac = new ActivityController();
-					json = ac.getActivityByID(aid);
+					json = ac.getActivityByID(user_id,aid);
+					//
+					ActivityEventController aec = new ActivityEventController();
+					def uStr = "{'user':"+user_id+"}";
+					aec.addActivityEvent(user_id, aid, uStr, "user", "join");
 				}else{
 					json = new JSONObject();
 					json.put("status", MobileController.FAIL);
@@ -968,6 +983,66 @@ class MobileController {
 		render json;
 	}
 	
+	/* getFileByFileID
+	 * 
+	 * @param in
+	 	{
+	 		"file":1,
+	 		"activity":1
+	 	}
+	 	@return 
+	 	{
+	 		status: success,
+	 		activity:1,
+	 		file_name:'guide.pdf',
+	 		uri:'http://xxx.xxx/xx/guide.pdf',
+	 		remote_path:'xxx://xxx/xx/xxx',
+	 		local_path:'/abc/def/guide.pdf',
+	 		user:'john'
+	 	}
+	 	OR
+	  	{
+	  		status:"failure"
+	  	}
+	 * */
+	def getFileByFileActivityID(){
+		JSONObject json;
+		try{
+			def user = (User)springSecurityService.currentUser;
+			def uid = user.getId();
+			long fid;
+			long aid;
+			boolean ret;
+			(ret, fid) = getRequestValueByNameFromJSON(getRequestJSON(), "file");
+			if(ret){
+				(ret, aid) = getRequestValueByNameFromJSON(getRequestJSON(), "activity");
+				if(ret){
+					def sql = "from ActivityFile where activity_id="+aid+" and file_id="+fid;
+					def afList = ActivityFile.executeQuery(sql);
+					if(afList.size() > 0){
+						FilesController fc = new FilesController();
+						def jsonStr = fc.getFileByFileID(fid);
+						json = new JSONObject(jsonStr);
+						json.put("activity", aid);
+					}else{
+						ret = false
+					}
+				}
+			}
+			
+			if(ret){
+				json.put("status", MobileController.SUCCESS);
+			}else{
+				json = new JSONObject();
+				json.put("status", MobileController.FAIL);
+			}
+		}catch(Exception e){
+			log.error(e.message);
+			json = new JSONObject();
+			json.put("status", MobileController.FAIL);
+		}
+		render json;
+	}
 	
 	/* addFileToActivity
 	 * 
@@ -1046,6 +1121,9 @@ class MobileController {
 							def afid = af.getId();
 							json.put("status", MobileController.SUCCESS);
 							json.put("id", afid);
+							//
+							ActivityEventController aec = new ActivityEventController();
+							aec.addActivityEvent(user_id, aid, file.toJsonString(), "file", "add");
 						}else{
 							file.delete(flush:true);
 							json.put("status", MobileController.FAIL);
@@ -1139,6 +1217,9 @@ class MobileController {
 								
 								if(file.save(flush:true)){
 									json.put("status", MobileController.SUCCESS);
+									//
+									ActivityEventController aec = new ActivityEventController();
+									aec.addActivityEvent(user_id, aid, file.toJsonString(), "file", "update");
 								}else{
 									json.put("status", MobileController.FAIL);
 								}
@@ -1208,6 +1289,10 @@ class MobileController {
 								ActivityFile af = afList[0];
 								af.delete(flush:true);
 								json.put("status", MobileController.SUCCESS);
+								//
+								ActivityEventController aec = new ActivityEventController();
+								def fStr = "{'file_id':"+fid+"}";
+								aec.addActivityEvent(user_id, aid, fStr, "file", "delete");
 							}else{
 								json.put("status", MobileController.FAIL);
 							}
