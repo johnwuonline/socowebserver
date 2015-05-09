@@ -124,7 +124,8 @@ class MobileController {
 					json.put("status", MobileController.SUCCESS);
 					//update the activity event
 					ActivityEventController aec = new ActivityEventController();
-					aec.addActivityUpdateEvent(uid, aid, name);
+					def value = "{'name':'"+name+"'}";
+					aec.addActivityUpdateEvent(uid, aid, value, "update");
 				} else {
 					json.put("status", MobileController.FAIL);
 					json.put("message", "activity is not existent.");
@@ -155,6 +156,7 @@ class MobileController {
 			def jsonObject = getRequestJSON()
 			long aid
 			boolean ret
+			def uid = springSecurityService.currentUser.id;
 			(ret, aid) = getRequestValueByNameFromJSON(jsonObject, "activity");
 			if(ret){
 				def sql = "from Activity where id=" + aid
@@ -163,6 +165,8 @@ class MobileController {
 					def achieved = true
 					Activity.executeUpdate("update Activity set is_archived=? where id=?", [achieved,aid])
 					json.put("status", MobileController.SUCCESS);
+					ActivityEventController aec = new ActivityEventController();
+					aec.addActivityUpdateEvent(uid, aid, "{}", "archive");
 				} else {
 					json.put("status", MobileController.FAIL);
 					json.put("message", "activity is not existent.");
@@ -228,16 +232,6 @@ class MobileController {
 									}else{
 										ret = false;
 									}
-									/*
-									ActivityAttributeController aac = new ActivityAttributeController()
-									if(aac.addAttribute(aid, aa.name, aa.type, aa.value, user_id)){
-										log.debug("activity attribute save successfully.activity id:"+aid+", name:"+aa.name);
-									}else{
-										ret = false;
-										attrList.add(aa.toJsonString());
-										log.debug("activity attribute save failed. activity id:"+aid+", name:"+aa.name);
-									}
-									*/
 								} else {
 									ret = false;
 									log.debug("there are some errors in request message.activity id:"+aid)
@@ -1188,7 +1182,7 @@ class MobileController {
 	  	}
 	 * */
 	def deleteFileToActivity(){
-		JSONObject json = new JSONObject();;
+		JSONObject json = new JSONObject();
 		try{
 			def user = (User)springSecurityService.currentUser;
 			def user_id = user.getId();
@@ -1241,13 +1235,75 @@ class MobileController {
 	 * @return out
 		{
 			"status": "success",
-			"activity":1,
-			"event_operate_type": "[add, update, delete]",
+			“activity":[{
+			"signature":"sfe342lkj",
+			"activity_id":1,
+			"event_operate_type": "[add, update, delete, join, archive]",
 			"event_content_type": "[activity, attribute, file, user]",
-			"value":"{json format value}"
+			"value":"{json format value}"},{…}]
 		}
+		OR
+		 {
+		   status:"failure"
+		 }
 	 * */
 	def getActivityEvent(){
-		
+		JSONObject json;
+		try{
+			def user = (User)springSecurityService.currentUser;
+			def user_id = user.getId();
+			ActivityEventController aec = new ActivityEventController();
+			json = aec.getEventJsonObj(user_id);
+		}catch(Exception e){
+			log.error(e.getMessage());
+			json = new JSONObject();
+			json.put("status", MobileController.FAIL);
+		}
+		render json;
 	}
+	
+	/* ackActivityEvent
+	 * @param in
+		{
+			"ack":[
+				{"signature":"sfe342lkj"},{...}
+			]
+		}
+		@return 
+		{
+		   status:"success"
+		 }
+		 OR
+		 {
+		   status:"failure"
+		 }
+	 * */
+	def ackActivityEvent(){
+		JSONObject json = new JSONObject();;
+		try{
+			def user = (User)springSecurityService.currentUser;
+			def user_id = user.getId();
+			def ret;
+			def signature;
+			(ret, signature) = getRequestValueByNameFromJSON(getRequestJSON(), "signature");
+			if(ret){
+				def sql = "from ActivityEvent where user_id="+user_id+" and signature='"+signature+"'";
+				def aeList = ActivityEvent.executeQuery(sql);
+				if(aeList.size() > 0){
+					ActivityEvent ae = aeList[0];
+					ae.delete(flush:true);
+					json.put("status", MobileController.SUCCESS);
+				}else{
+					json.put("status", MobileController.FAIL);
+				}
+			}else{
+				json.put("status", MobileController.FAIL);
+			}
+		}catch(Exception e){
+			log.error(e.getMessage());
+			json.put("status", MobileController.FAIL);
+		}
+		render json;
+	}
+	
 }

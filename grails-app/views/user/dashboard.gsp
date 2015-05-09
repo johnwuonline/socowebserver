@@ -239,6 +239,7 @@
 				            <td>EventOperateType</td>
 				            <td>EventContentType</td>
 				            <td>value</td>
+				            <td>signature</td>
 				        </tr>
 				        <g:each in="${aeList}" var="item">
 				        <tr>
@@ -248,6 +249,7 @@
 				            <td>${item.event_operate_type}</td>
 				            <td>${item.event_content_type}</td>
 				            <td>${item.event_content_value}</td>
+				            <td>${item.signature}</td>
 				        </tr>
 				        </g:each>        
 				    </table>

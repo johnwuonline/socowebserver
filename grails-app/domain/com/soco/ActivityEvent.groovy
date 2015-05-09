@@ -10,7 +10,19 @@ class ActivityEvent {
 	String event_content_type;
 	/* content value: json string */
 	String event_content_value;
+	//
+	String signature;
 
     static constraints = {
+		signature unique: true
     }
+	
+	String toJsonString(){
+		return "{'activity_id':"+activity_id+
+				",'event_operate_type':'"+event_operate_type+
+				"','event_content_type':'"+event_content_type+
+				"','value':"+event_content_value+
+				",'signature':'"+signature+
+				"'}";
+	}
 }
