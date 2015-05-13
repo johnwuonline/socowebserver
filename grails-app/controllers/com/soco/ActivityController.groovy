@@ -20,7 +20,7 @@ class ActivityController {
 			def sql = "from Activity where id=" + aid
 			def activityList = Activity.executeQuery(sql)
 			if(activityList.size() == 1){
-				sql = "from UserActivity wehre activity_id="+aid+" and user_id="+uid;
+				sql = "from UserActivity where activity_id="+aid+" and user_id="+uid;
 				def uaList = UserActivity.executeQuery(sql);
 				if(uaList.size() > 0){
 					// put activity basic information
